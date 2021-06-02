@@ -32,7 +32,7 @@ def custom_login(response):
       user = authenticate(response, username=username, password=password)
       if user is not None:
         login(response, user)
-        return HttpResponseRedirect('/?msg=You\'re logged in!')
+        return HttpResponseRedirect('/?msg=Welcome back!')
 
   return HttpResponseRedirect('/?err=Invalid details. Please try again.')
 
