@@ -32,12 +32,13 @@ def custom_login(response):
       user = authenticate(response, username=username, password=password)
       if user is not None:
         login(response, user)
+        return HttpResponseRedirect('/?msg=You\'re logged in!')
 
-  return HttpResponseRedirect('/')
+  return HttpResponseRedirect('/?err=Invalid details. Please try again.')
 
 def custom_logout(response):
   logout(response)
-  return HttpResponseRedirect('/')
+  return HttpResponseRedirect('/?msg=You\'ve logged out.')
 
 def about(response):
   return render(response, 'main/about.html', {})

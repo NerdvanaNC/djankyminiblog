@@ -8,23 +8,12 @@
       {% if user.is_authenticated %}
         <!-- If the user's logged in, we have the post form -->
         <div class="card my-3">
+          <div class="card-header">
+            <strong>Write</strong>
+          </div>
           <div class="container py-3 px-3">
             <form method="post">
               {% csrf_token %}
-              {% if form.errors %}
-                {% for field in form %}
-                  <div class="alert alert-danger">
-                    {% for error in form.errors %}
-                      {{ error|escape }}
-                    {% endfor %}
-                  </div>
-                {% endfor %}
-                <div class="alert alert-message">
-                  {% for error in form.non_field_errors %}
-                    {{ error|escape }}
-                  {% endfor %}
-                </div>
-              {% endif %}
               <div class="form-floating mb-3">
                 {{ form.text }}
                 <label for="{{ form.text.id_for_label }}">What's on your mind?</label>
@@ -42,20 +31,6 @@
           <div class="container py-3 px-3">
             <form method="post" action="/login/">
               {% csrf_token %}
-              {% if form.errors %}
-                {% for field in form %}
-                  <div class="alert alert-danger">
-                    {% for error in form.errors %}
-                      {{ error|escape }}
-                    {% endfor %}
-                  </div>
-                {% endfor %}
-                <div class="alert alert-message">
-                  {% for error in form.non_field_errors %}
-                    {{ error|escape }}
-                  {% endfor %}
-                </div>
-              {% endif %}
               <div class="form-floating mb-3">
                 {{ form.username }}
                 <label for="{{ form.username.id_for_label }}">Username</label>
