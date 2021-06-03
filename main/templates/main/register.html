@@ -1,0 +1,68 @@
+{% extends 'main/index.html' %}
+
+{% load widget_tweaks %}
+{% load tag_alerts %}
+
+{% block alerts %}
+  <div class="row justify-content-center" id="alerts">
+    <div class="col-md-6 col-12">
+      {% if request.GET %}
+        {% alert request.GET %}
+      {% elif form.errors %}
+        <div class="m-0 alert alert-danger shadow-sm alert-dismissible fade show" role="alert">
+          {% for field in form %}
+            <ul class="small">
+              {% for error in field.errors %}
+                <li>{{ error|escape }}</li>
+              {% endfor %}
+            </ul>
+          {% endfor %}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock alerts %}
+
+{% block title %}Register{% endblock title %}
+
+{% block content %}
+  {% if not user.is_authenticated %}
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-6">
+        <div class="card my-3">
+          <div class="card-header">
+            <strong>Create an account</strong>
+          </div>
+          <div class="container py-3 px-3">
+            <form method="post">
+              {% csrf_token %}
+              {% for field in form %}
+                <div class="form-floating mb-3">
+                  {% render_field field class="form-control" placeholder=field.label.tag %}
+                  <label for="{{ form.username.id_for_label }}">{{ field.label_tag }}</label>
+                  {% if field.help_text %}
+                    <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+              <div class="text-end">
+                <button type="submit" class="btn btn-primary">Register</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% else %}
+        <div class="card my-3">
+          <div class="card-header">
+            <strong>Create an account</strong>
+          </div>
+          <div class="container py-3 px-3">
+            <p class="lead">You're already logged in!</p>
+            <p>View posts or create one of your own on the <a href="/">Homepage &rarr;</a></p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock content %}

@@ -1,44 +1,75 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login, logout
-from .forms import NewPost, LoginForm
+from .forms import NewPost, LoginForm, RegisterForm
 from .models import Post
 
 # Create your views here.
 def main(response):
   all_posts = Post.objects.all()
+
+  # DEBUG
+
+  # form = LoginForm()
+  # if response.method == 'POST':
+  #   print("DEBUG:", response.POST)
+  #   print("DEBUG:", response.POST.get('login'))
+  #   if 'login' in response.POST:
+  #     print("DEBUG: 'login' is in POST")
+  #   else:
+  #     print("DEBUG: 'login' is NOT IN POST")
+
   if response.user.is_authenticated:
     # User logged in
     if response.method == 'POST':
-      form = NewPost(response.POST)
-      if form.is_valid():
-        post_text = form.cleaned_data['text']
-        p = Post(text = post_text, likes = 0)
-        p.save()
-        return HttpResponseRedirect('/') # If everything's cool; return back to the homepage with a blank form.
+      if 'post' in response.POST:
+        form = NewPost(response.POST)
+        if form.is_valid():
+          post_text = form.cleaned_data['text']
+          p = Post(text = post_text, likes = 0)
+          p.save()
+          return HttpResponseRedirect('/') # If everything's cool; return back to the homepage with a blank form.
     else:
       form = NewPost()
   else:
-    # User not logged in
-    form = LoginForm()
+    if response.method == 'POST':
+      if 'login' in response.POST:
+        form = LoginForm(response.POST)
+        username = response.POST.get('username')
+        password = response.POST.get('password')
+        user = authenticate(response, username=username, password=password)
+        if user is not None:
+          login(response, user)
+          return HttpResponseRedirect('/?msg=Welcome back!')
+        else:
+          return HttpResponseRedirect('/?err=Invalid Credentials. Please try again.')
+    else:
+      form = LoginForm()
 
   return render(response, 'main/homepage.html', {'form': form, 'all_posts': all_posts})
 
-def custom_login(response):
-  if response is not None:
-    if response.method == 'POST':
-      username = response.POST.get('username')
-      password = response.POST.get('password')
+
+def custom_register(response):
+  if response.method == 'POST':
+    form = RegisterForm(response.POST)
+    if form.is_valid():
+      form.save()
+      username = form.cleaned_data['username']
+      password = form.cleaned_data['password1']
       user = authenticate(response, username=username, password=password)
       if user is not None:
         login(response, user)
-        return HttpResponseRedirect('/?msg=Welcome back!')
+        return HttpResponseRedirect('/?msg=Welcome!')
+  else:
+    form = RegisterForm()
 
-  return HttpResponseRedirect('/?err=Invalid details. Please try again.')
+  return render(response, 'main/register.html', {'form': form})
+
 
 def custom_logout(response):
   logout(response)
   return HttpResponseRedirect('/?msg=You\'ve logged out.')
+
 
 def about(response):
   return render(response, 'main/about.html', {})

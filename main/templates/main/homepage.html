@@ -1,6 +1,23 @@
 {% extends 'main/index.html' %}
 
+{% load tag_alerts %}
+
 {% block title %}Feed{% endblock title %}
+
+{% block alerts %}
+  <div class="row justify-content-center" id="alerts">
+    <div class="col-md-6 col-12">
+      {% if request.GET %}
+        {% alert request.GET %}
+      {% elif form.errors %}
+        <div class="m-0 alert alert-danger shadow-sm alert-dismissible fade show" role="alert">
+          {{ form.errors }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock alerts %}
 
 {% block content %}
   <div class="row justify-content-center">
@@ -21,7 +38,7 @@
                 {{ form.text }}
                 <label for="{{ form.text.id_for_label }}">What's on your mind?</label>
               </div>
-              <button type="submit" class="btn btn-primary">Post</button>
+              <button type="submit" class="btn btn-primary" name="post">Post</button>
             </form>
           </div>
         </div>
@@ -32,8 +49,9 @@
             <strong>Login</strong>
           </div>
           <div class="container py-3 px-3">
-            <form method="post" action="/login/">
+            <form method="post"> <!-- action="/login/" -->
               {% csrf_token %}
+              {{ form.errors }}
               <div class="form-floating mb-3">
                 {{ form.username }}
                 <label for="{{ form.username.id_for_label }}">Username</label>
@@ -42,8 +60,9 @@
                 {{ form.password }}
                 <label for="{{ form.password.id_for_label }}">Password</label>
               </div>
-              <div class="text-end">
-                <button type="submit" class="btn btn-primary">Login</button>
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="/register">Register &rarr;</a>
+                <button type="submit" class="btn btn-primary" name="login">Login</button>
               </div>
             </form>
           </div>

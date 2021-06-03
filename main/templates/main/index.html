@@ -11,6 +11,22 @@
       .navbar {
         z-index: 1;
       }
+
+      #alerts {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 3.5rem;
+        z-index: 1000;
+      }
+
+      .help-text {
+        font-size: 0.75rem;
+      }
+
+      .help-text ul {
+        padding-left: 0.9rem;
+      }
     </style>
   </head>
   <body class="min-vh-100 d-flex flex-column h-100">
@@ -36,18 +52,26 @@
               </li>
             {% endif %}
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="/about">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/register">Register</a>
             </li>
           </ul>
         </div>
       </div>
     </nav>
     <div class="container">
+
+      {% block alerts %}
+      {% endblock alerts %}
+
       {% block content %}
       {% endblock content %}
+
     </div>
     <footer class="footer mt-auto py-3 bg-dark border-top border-3 border-secondary">
       <div class="container">
