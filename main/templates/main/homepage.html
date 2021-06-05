@@ -1,8 +1,15 @@
 {% extends 'main/index.html' %}
 
+{% load widget_tweaks %}
 {% load tag_alerts %}
 
-{% block title %}Feed{% endblock title %}
+{% block title %}
+  {% if user.is_authenticated %}
+    Feed
+  {% else %}
+    Login
+  {% endif %}
+{% endblock title %}
 
 {% block alerts %}
   <div class="row justify-content-center" id="alerts">
@@ -21,45 +28,49 @@
 
 {% block content %}
   <div class="row justify-content-center">
-    <div class="col-12 col-md-6 px-3">
+    <div class="col-12 col-lg-8 px-3">
       {% if user.is_authenticated %}
         <!-- If the user's logged in, we have the post form -->
         <div class="card my-3">
           <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
-              <strong>Write</strong>
+              <strong>What's on your mind?</strong>
               <span style="font-size: 0.75rem;">Last Entry: 10:00 | May 31st, 2021 (UTC)</span>
             </div>
           </div>
           <div class="container py-3 px-3">
             <form method="post">
               {% csrf_token %}
-              <div class="form-floating mb-3">
-                {{ form.text }}
-                <label for="{{ form.text.id_for_label }}">What's on your mind?</label>
-              </div>
+              {% for field in form %}
+                <div class="mb-3">
+                  {% render_field field class="form-control" %}
+                  {% if field.help_text %}
+                    <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
+                  {% endif %}
+                </div>
+              {% endfor %}
               <button type="submit" class="btn btn-primary" name="post">Post</button>
             </form>
           </div>
         </div>
       {% else %}
-        <!-- Otherwise we have the login form -->
+        <!-- If user not logged in - Login form -->
         <div class="card my-3">
           <div class="card-header">
             <strong>Login</strong>
           </div>
           <div class="container py-3 px-3">
-            <form method="post"> <!-- action="/login/" -->
+            <form method="post">
               {% csrf_token %}
-              {{ form.errors }}
-              <div class="form-floating mb-3">
-                {{ form.username }}
-                <label for="{{ form.username.id_for_label }}">Username</label>
-              </div>
-              <div class="form-floating mb-3">
-                {{ form.password }}
-                <label for="{{ form.password.id_for_label }}">Password</label>
-              </div>
+              {% for field in form %}
+                <div class="form-floating mb-3">
+                  {% render_field field class="form-control" placeholder=field.label.tag %}
+                  <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
+                  {% if field.help_text %}
+                    <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
+                  {% endif %}
+                </div>
+              {% endfor %}
               <div class="d-flex justify-content-between align-items-center">
                 <a href="/register">Register &rarr;</a>
                 <button type="submit" class="btn btn-primary" name="login">Login</button>
@@ -72,7 +83,7 @@
   </div>
   <hr style="width: 40%;" class="mx-auto">
   <div class="row justify-content-center">
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-lg-8">
       {% for post in all_posts %}
         <div class="card my-3">
             <div class="card-header">
@@ -83,7 +94,12 @@
             </div>
           <div class="card-body">
             <p class="card-text">{{ post.text }}</p>
-            <div class="text-end"><button class="btn btn-danger like">Like</button></div>
+          </div>
+          <div class="card-footer text-muted">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="like-count" style="font-size: 0.75rem;">1,000 upvotes</span>
+                <button class="btn btn-danger btn-sm like" {% if not user.is_authenticated %}disabled{% endif %}>Like</button>
+            </div>
           </div>
         </div>
       {% endfor %}

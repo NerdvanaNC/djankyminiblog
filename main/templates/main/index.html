@@ -30,7 +30,7 @@
     </style>
   </head>
   <body class="min-vh-100 d-flex flex-column h-100">
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark px-5 py-4">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark px-5 py-4 mb-4">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">DjankyMiniblog</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,12 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mb-2 mb-lg-0 ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/about">About</a>
+            </li>
             {% if user.is_authenticated %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -50,21 +56,16 @@
                   <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
                 </ul>
               </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/register">Register</a>
+              </li>
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/about">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="/register">Register</a>
-            </li>
           </ul>
         </div>
       </div>
     </nav>
-    <div class="container">
+    <div class="container pb-4">
 
       {% block alerts %}
       {% endblock alerts %}
@@ -73,7 +74,7 @@
       {% endblock content %}
 
     </div>
-    <footer class="footer mt-auto py-3 bg-dark border-top border-3 border-secondary">
+    <footer class="footer mt-auto py-3 bg-dark border-top border-3">
       <div class="container">
         <div class="row">
           <div class="col-sm-6 col-12 text-muted small text-start">

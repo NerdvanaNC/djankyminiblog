@@ -1,23 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
-from .forms import NewPost, LoginForm, RegisterForm
+from .forms import NewPost, RegisterForm
 from .models import Post
 
 # Create your views here.
 def main(response):
   all_posts = Post.objects.all()
-
-  # DEBUG
-
-  # form = LoginForm()
-  # if response.method == 'POST':
-  #   print("DEBUG:", response.POST)
-  #   print("DEBUG:", response.POST.get('login'))
-  #   if 'login' in response.POST:
-  #     print("DEBUG: 'login' is in POST")
-  #   else:
-  #     print("DEBUG: 'login' is NOT IN POST")
 
   if response.user.is_authenticated:
     # User logged in
@@ -34,7 +24,7 @@ def main(response):
   else:
     if response.method == 'POST':
       if 'login' in response.POST:
-        form = LoginForm(response.POST)
+        form = AuthenticationForm(response.POST)
         username = response.POST.get('username')
         password = response.POST.get('password')
         user = authenticate(response, username=username, password=password)
@@ -44,7 +34,7 @@ def main(response):
         else:
           return HttpResponseRedirect('/?err=Invalid Credentials. Please try again.')
     else:
-      form = LoginForm()
+      form = AuthenticationForm()
 
   return render(response, 'main/homepage.html', {'form': form, 'all_posts': all_posts})
 

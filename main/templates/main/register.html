@@ -40,26 +40,33 @@
               {% for field in form %}
                 <div class="form-floating mb-3">
                   {% render_field field class="form-control" placeholder=field.label.tag %}
-                  <label for="{{ form.username.id_for_label }}">{{ field.label_tag }}</label>
+                  <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                   {% if field.help_text %}
                     <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
                   {% endif %}
                 </div>
               {% endfor %}
               <div class="text-end">
-                <button type="submit" class="btn btn-primary">Register</button>
+                <div class="d-flex justify-content-between align-items-center">
+                  <a href="/">Login &rarr;</a>
+                  <button type="submit" class="btn btn-primary">Register</button>
+                </div>
               </div>
             </form>
           </div>
         </div>
       {% else %}
-        <div class="card my-3">
-          <div class="card-header">
-            <strong>Create an account</strong>
-          </div>
-          <div class="container py-3 px-3">
-            <p class="lead">You're already logged in!</p>
-            <p>View posts or create one of your own on the <a href="/">Homepage &rarr;</a></p>
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-6">
+            <div class="card my-3">
+              <div class="card-header">
+                <strong>Create an account</strong>
+              </div>
+              <div class="container py-3 px-3">
+                <p class="lead">You're already logged in!</p>
+                <p>View posts or create one of your own on the <a href="/">Homepage &rarr;</a></p>
+              </div>
+            </div>
           </div>
         </div>
       {% endif %}
