@@ -36,7 +36,7 @@ def main(response):
         user = authenticate(response, username=username, password=password)
         if user is not None:
           login(response, user)
-          return HttpResponseRedirect('/?msg=Welcome back!')
+          return HttpResponseRedirect('/?msg=Hey, @{}.'.format(user.username))
         else:
           return HttpResponseRedirect('/?err=Invalid Credentials. Please try again.')
     else:
