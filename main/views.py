@@ -16,9 +16,9 @@ def main(response):
         form = NewPost(response.POST)
         if form.is_valid():
           post_text = form.cleaned_data['text']
-          p = Post(text = post_text, likes = 0)
+          u = response.user
+          p = Post(text = post_text, likes = 0, user = u)
           p.save()
-          response.user.post.add(p) # models.py - Post.user[ForeignKey][related_name="post"]
           return HttpResponseRedirect('/') # If everything's cool; return back to the homepage with a blank form.
     else:
       form = NewPost()
