@@ -4,6 +4,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from .forms import NewPost, RegisterForm
 from .models import Post
+import bleach
+
+bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul']
+bleach_allowed_styles = ['color', 'font-family', 'font-size', 'text-decoration', 'text-align']
+
 
 # Create your views here.
 def main(response):
@@ -15,7 +20,7 @@ def main(response):
       if 'post' in response.POST:
         form = NewPost(response.POST)
         if form.is_valid():
-          post_text = form.cleaned_data['text']
+          post_text = bleach.clean(form.cleaned_data['text'], tags=bleach_allowed_tags, styles=bleach_allowed_styles)
           u = response.user
           p = Post(text = post_text, likes = 0, user = u)
           p.save()
