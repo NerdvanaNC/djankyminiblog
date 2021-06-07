@@ -13,7 +13,6 @@ def alert(dict_from_tag):
     context = 'alert-danger'
     text = dict_from_tag.get('err')
   else:
-    context = "alert-info"
-    text = ":)"
+    return
 
   return {'context': [context, text]}

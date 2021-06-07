@@ -9,5 +9,8 @@ class Post(models.Model):
   likes = models.IntegerField()
   createdAt = models.DateTimeField(auto_now_add=True)
 
+  class Meta:
+    ordering = ['-createdAt']
+
   def __str__(self):
     return self.text

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import NewPost, RegisterForm
 from .models import Post
 import bleach
@@ -12,8 +13,24 @@ bleach_allowed_styles = ['color', 'font-family', 'font-size', 'text-decoration',
 
 # Create your views here.
 def main(response):
+  # Infinite Scrolling Pagination
+  # https://simpleisbetterthancomplex.com/tutorial/2017/03/13/how-to-create-infinite-scroll-with-django.html
   all_posts = Post.objects.all()
+  current_page = response.GET.get('page', 1)
+  paginator_obj = Paginator(all_posts, 5)
 
+  if response.user.is_authenticated:
+    try:
+      page_obj = paginator_obj.page(current_page)
+    except PageNotAnInteger:
+      page_obj = paginator_obj.page(1)
+    except EmptyPage:
+      page_obj = paginator_obj.page(paginator_obj.num_pages)
+  else:
+    page_obj = Post.objects.all()[:5]
+
+
+  # User Auth Flow
   if response.user.is_authenticated:
     # User logged in
     if response.method == 'POST':
@@ -42,7 +59,7 @@ def main(response):
     else:
       form = AuthenticationForm()
 
-  return render(response, 'main/homepage.html', {'form': form, 'all_posts': all_posts})
+  return render(response, 'main/homepage.html', {'form': form, 'page_obj': page_obj})
 
 
 def custom_register(response):

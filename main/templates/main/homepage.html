@@ -84,25 +84,66 @@
   <hr style="width: 40%;" class="mx-auto">
   <div class="row justify-content-center">
     <div class="col-12 col-lg-8">
-      {% for post in all_posts %}
-        <div class="card my-3">
-            <div class="card-header">
-              <div class="d-flex justify-content-between align-items-center">
-                <strong class="post-author">{% if post.user %} {{ post.user.get_username }} {% else %}Unknown Author{% endif %}</strong>
-                <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y" }} (UTC)</span>
+      <div class="infinite-container">
+        {% for post in page_obj %}
+          <div class="infinite-item">
+            <div class="card my-3">
+                <div class="card-header">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <strong class="post-author">
+                      {% if post.user %}
+                        {{ post.user.get_username }}
+                      {% else %}
+                        Unknown Author
+                      {% endif %}
+                    </strong>
+                    <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y" }} (UTC)</span>
+                  </div>
+                </div>
+              <div class="card-body">
+                <p class="card-text">{{ post.text|safe }}</p>
+              </div>
+              <div class="card-footer text-muted">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="like-count" style="font-size: 0.75rem;">1,000 upvotes</span>
+                    <button class="btn btn-danger btn-sm like" {% if not user.is_authenticated %}disabled{% endif %}>Like</button>
+                </div>
               </div>
             </div>
-          <div class="card-body">
-            <p class="card-text">{{ post.text|safe }}</p>
           </div>
-          <div class="card-footer text-muted">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="like-count" style="font-size: 0.75rem;">1,000 upvotes</span>
-                <button class="btn btn-danger btn-sm like" {% if not user.is_authenticated %}disabled{% endif %}>Like</button>
+        {% endfor %}
+      </div>
+
+      {% if page_obj.has_next and user.is_authenticated %}
+        <a href="?page={{ page_obj.next_page_number }}" class="infinite-more-link"></a>
+      {% endif %}
+
+      <div class="infinite-loader mt-5 text-center" style="display: none;">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+      </div>
+
+      {% if not user.is_authenticated %}
+        <div class="row justify-content-center mt-5">
+          <div class="col-12 col-lg-6 text-center">
+            <div class="alert alert-danger">
+              <strong><a class="alert-link" href="#">Log in</a> to see more posts.</strong>
             </div>
           </div>
         </div>
-      {% endfor %}
+      {% endif %}
+
     </div>
   </div>
+
+  <script>
+    var infinite = new Waypoint.Infinite({
+      element: jQuery('.infinite-container')[0],
+      onBeforePageLoad: function() {
+        jQuery('.infinite-loader').show();
+      },
+      onAfterPageLoad: function($items) {
+        jQuery('.infinite-loader').hide();
+      }
+    });
+  </script>
 {% endblock content %}
