@@ -133,7 +133,7 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js'
+TINYMCE_JS_URL = 'https://cdn.tiny.cloud/1/7gl1f1k0nljygpowm4vqyageiswlckw02nm87n1zs1dxb17h/tinymce/5/tinymce.min.js'
 TINYMCE_COMPRESSOR = False
 
 TINYMCE_DEFAULT_CONFIG = {
