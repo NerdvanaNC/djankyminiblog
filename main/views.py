@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -82,6 +82,19 @@ def custom_register(response):
 def custom_logout(response):
   logout(response)
   return HttpResponseRedirect('/?msg=You\'ve logged out.')
+
+def ajax_like(response):
+  if response.GET.get('id'):
+    p = Post.objects.filter(id=(response.GET.get('id')))
+    if p:
+      p = p[0]
+      likes = p.post_like()
+      p.save()
+      return JsonResponse({'result': likes})
+    else:
+      return JsonResponse({'result': 'Not found.'})
+  else:
+    return JsonResponse({'result': "Invalid arguments."})
 
 
 def about(response):

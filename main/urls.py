@@ -7,4 +7,5 @@ urlpatterns = [
     path('register/', views.custom_register),
     path('logout/', views.custom_logout),
     path('tinymce/', include('tinymce.urls')),
+    path('like/', views.ajax_like),
 ]

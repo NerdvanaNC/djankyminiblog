@@ -14,3 +14,7 @@ class Post(models.Model):
 
   def __str__(self):
     return self.text
+
+  def post_like(self):
+    self.likes += 1
+    return self.likes

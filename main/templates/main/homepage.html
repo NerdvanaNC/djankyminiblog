@@ -105,8 +105,10 @@
               </div>
               <div class="card-footer text-muted">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="like-count" style="font-size: 0.75rem;">1,000 upvotes</span>
-                    <button class="btn btn-danger btn-sm like" {% if not user.is_authenticated %}disabled{% endif %}>Like</button>
+                    <span class="likes" style="font-size: 0.75rem;"><span class="like-count">{{ post.likes }}</span> upvotes</span>
+                    <a href="/like?id={{ post.id }}" target="_blank" class="btn btn-danger btn-sm like-button" {% if not user.is_authenticated %}disabled{% endif %}>
+                      Like
+                    </a>
                 </div>
               </div>
             </div>
@@ -136,14 +138,43 @@
   </div>
 
   <script>
-    var infinite = new Waypoint.Infinite({
-      element: jQuery('.infinite-container')[0],
-      onBeforePageLoad: function() {
-        jQuery('.infinite-loader').show();
-      },
-      onAfterPageLoad: function($items) {
-        jQuery('.infinite-loader').hide();
-      }
-    });
+    jQuery(document).ready(function() {
+      // infinite scrolling
+      var infinite = new Waypoint.Infinite({
+        element: jQuery('.infinite-container')[0],
+        onBeforePageLoad: function() {
+          jQuery('.infinite-loader').show();
+        },
+        onAfterPageLoad: function($items) {
+          jQuery('.infinite-loader').hide();
+        }
+      });
+
+      // ajax like
+      jQuery('.like-button').click(function(event) {
+        event.preventDefault();
+        $this = jQuery(this);
+
+        jQuery.ajax(this.href, {
+          success: function(result) {
+            result = result.result
+            if (parseInt(result) > 0) {
+              $this.prev().children().first().text(result); // this is the ".like-count" span tag
+              $this.addClass('disabled');              
+            } else {
+              originalText = $this.text();
+              $this.text('Error. :(');
+              window.setTimeout(function() {
+                $this.text(originalText);
+              }, 4000);
+            }
+          },
+          error: function(result) {
+            console.log('An error occured.' + result);
+          }
+        })
+      })
+
+    }); // document.ready()
   </script>
 {% endblock content %}
