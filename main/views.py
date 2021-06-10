@@ -27,7 +27,7 @@ def main(response):
     except EmptyPage:
       page_obj = paginator_obj.page(paginator_obj.num_pages)
   else:
-    page_obj = Post.objects.all()[:5]
+    page_obj = all_posts[:5]
 
 
   # User Auth Flow
@@ -59,7 +59,8 @@ def main(response):
     else:
       form = AuthenticationForm()
 
-  return render(response, 'main/homepage.html', {'form': form, 'page_obj': page_obj})
+  response_obj = {'form': form, 'page_obj': page_obj, 'navactive': 'home'}
+  return render(response, 'main/homepage.html', response_obj)
 
 
 def custom_register(response):
@@ -98,4 +99,4 @@ def ajax_like(response):
 
 
 def about(response):
-  return render(response, 'main/about.html', {})
+  return render(response, 'main/about.html', {'navactive': 'about'})
