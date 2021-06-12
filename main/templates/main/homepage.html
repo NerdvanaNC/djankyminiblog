@@ -35,7 +35,9 @@
           <div class="card-header">
             <div class="d-flex justify-content-between align-items-center">
               <strong>@{{ user.get_username }}</strong>
-              <span style="font-size: 0.75rem;">Last Entry: 10:00 | May 31st, 2021 (UTC)</span>
+              <span style="font-size: 0.75rem;">
+                Last Entry: {{ user.profile.last_post|date:"H:i | jS F, Y" }} (UTC)
+              </span>
             </div>
           </div>
           <div class="container py-3 px-3">
@@ -85,14 +87,15 @@
   <div class="row justify-content-center">
     <div class="col-12 col-lg-8">
       <div class="infinite-container">
+
         {% for post in page_obj %}
           <div class="infinite-item">
-            <div class="card my-3">
+            <div class="card post my-3">
                 <div class="card-header">
                   <div class="d-flex justify-content-between align-items-center">
                     <strong class="post-author">
-                      {% if post.user %}
-                        {{ post.user.get_username }}
+                      {% if post.author %}
+                        {{ post.author.get_username }}
                       {% else %}
                         Unknown Author
                       {% endif %}
@@ -106,14 +109,23 @@
               <div class="card-footer text-muted">
                 <div class="d-flex justify-content-between align-items-center">
                     <span class="likes" style="font-size: 0.75rem;"><span class="like-count">{{ post.likes }}</span> upvotes</span>
-                    <a href="/like?id={{ post.id }}" target="_blank" class="btn btn-danger btn-sm like-button" {% if not user.is_authenticated %}disabled{% endif %}>
-                      Like
-                    </a>
+                    {% if user.is_authenticated %}
+                      {% if post not in user.profile.liked_posts.all %}
+                        <a href="/like?id={{ post.id }}" target="_blank" class="btn btn-success btn-sm like-button">
+                          Like
+                        </a>
+                      {% else %}
+                        <a href="/unlike?id={{ post.id }}" target="_blank" class="btn btn-danger btn-sm unlike-button">
+                          Unlike
+                        </a>
+                      {% endif %}
+                    {% endif %}
                 </div>
               </div>
             </div>
           </div>
         {% endfor %}
+
       </div>
 
       {% if page_obj.has_next and user.is_authenticated %}
@@ -151,18 +163,29 @@
       });
 
       // ajax like
-      jQuery('.like-button').click(function(event) {
+      jQuery('.post').on('click', '.like-button', function(event) {
         event.preventDefault();
-        $this = jQuery(this);
+        console.log("Like clicked.");
+        let $this = jQuery(this);
 
         jQuery.ajax(this.href, {
           success: function(result) {
             result = result.result
             if (parseInt(result) > 0) {
+              // Success
               $this.prev().children().first().text(result); // this is the ".like-count" span tag
-              $this.addClass('disabled');              
+              let unlikeHref = $this.attr('href').replace('/like', '/unlike');
+              let unlikeButton = '<a target="_blank" href="' + unlikeHref + '" class="btn btn-danger btn-sm unlike-button">Unlike</a>';
+              $this.replaceWith(unlikeButton);
+
+            } else if (result === "Already liked.") {
+              let originalText = $this.text();
+              $this.text('Already liked!');
+              window.setTimeout(function() {
+                $this.text(originalText);
+              }, 4000);
             } else {
-              originalText = $this.text();
+              let originalText = $this.text();
               $this.text('Error. :(');
               window.setTimeout(function() {
                 $this.text(originalText);
@@ -173,7 +196,41 @@
             console.log('An error occured.' + result);
           }
         })
-      })
+      });
+
+      // ajax unlike
+      jQuery('.post').on('click', '.unlike-button', function(event) {
+        event.preventDefault();
+        console.log("unlike clicked.");
+        let $this = jQuery(this);
+
+        jQuery.ajax(this.href, {
+          success: function(result) {
+            result = result.result
+            if (parseInt(result) >= 0) {
+              $this.prev().children().first().text(result); // this is the ".like-count" span tag
+              let likeHref = $this.attr('href').replace('/unlike', '/like');
+              let likeButton = '<a target="_blank" href="' + likeHref + '" class="btn btn-success btn-sm like-button">Like</a>';
+              $this.replaceWith(likeButton);
+            } else if (result === "Not liked.") {
+              let originalText = $this.text();
+              $this.text('Not liked!');
+              window.setTimeout(function() {
+                $this.text(originalText);
+              }, 4000);
+            } else {
+              let originalText = $this.text();
+              $this.text('Error. :(');
+              window.setTimeout(function() {
+                $this.text(originalText);
+              }, 4000);
+            }
+          },
+          error: function(result) {
+            console.log('An error occured.' + result);
+          }
+        })
+      });
 
     }); // document.ready()
   </script>

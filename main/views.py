@@ -6,8 +6,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import NewPost, RegisterForm
 from .models import Post
 import bleach
+import datetime
+from django.utils import timezone
 
-bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul']
+bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'span']
+bleach_allowed_attrs = { '*': ['style'], 'a': ['href', 'title', '_target'] }
 bleach_allowed_styles = ['color', 'font-family', 'font-size', 'text-decoration', 'text-align']
 
 
@@ -37,11 +40,17 @@ def main(response):
       if 'post' in response.POST:
         form = NewPost(response.POST)
         if form.is_valid():
-          post_text = bleach.clean(form.cleaned_data['text'], tags=bleach_allowed_tags, styles=bleach_allowed_styles)
           u = response.user
-          p = Post(text = post_text, likes = 0, user = u)
-          p.save()
-          return HttpResponseRedirect('/') # If everything's cool; return back to the homepage with a blank form.
+          now = timezone.now()
+          if (now - u.profile.last_post).total_seconds() > 86400: # if it's been more than a day since user posted last
+            post_text = bleach.clean(form.cleaned_data['text'], tags=bleach_allowed_tags, attributes=bleach_allowed_attrs, styles=bleach_allowed_styles)
+            p = Post(text = post_text, likes = 0, author = u)
+            p.save()
+            u.profile.last_post = datetime.datetime.now()
+            u.save()
+            return HttpResponseRedirect('/?msg=Done! Your story is out in the world.') # If everything's cool; return back to the homepage with a blank form.
+          else:
+            return HttpResponseRedirect('/?msg=You need to wait 24 hours before posting again.')
     else:
       form = NewPost()
   else:
@@ -87,11 +96,38 @@ def custom_logout(response):
 def ajax_like(response):
   if response.GET.get('id'):
     p = Post.objects.filter(id=(response.GET.get('id')))
+    u = response.user
     if p:
       p = p[0]
-      likes = p.post_like()
-      p.save()
-      return JsonResponse({'result': likes})
+      post_already_liked = u.profile.liked_posts.filter(id=p.id)
+      if post_already_liked:
+        return JsonResponse({'result': 'Already liked.'})
+      else:
+        likes = p.post_like()
+        p.save()
+        u.profile.liked_posts.add(p)
+        return JsonResponse({'result': likes})
+
+    else:
+      return JsonResponse({'result': 'Not found.'})
+  else:
+    return JsonResponse({'result': "Invalid arguments."})
+
+def ajax_unlike(response):
+  if response.GET.get('id'):
+    p = Post.objects.filter(id=(response.GET.get('id')))
+    u = response.user
+    if p:
+      p = p[0]
+      post_already_liked = u.profile.liked_posts.filter(id=p.id)
+      if post_already_liked:
+        likes = p.post_unlike()
+        p.save()
+        u.profile.liked_posts.remove(p)
+        return JsonResponse({'result': likes})
+      else:
+        return JsonResponse({'result': 'Not liked.'})
+
     else:
       return JsonResponse({'result': 'Not found.'})
   else:
