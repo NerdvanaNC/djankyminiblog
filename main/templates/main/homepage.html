@@ -95,7 +95,7 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <strong class="post-author">
                       {% if post.author %}
-                        {{ post.author.get_username }}
+                        <a href="/@{{ post.author.get_username }}">@{{ post.author.get_username }}</a>
                       {% else %}
                         Unknown Author
                       {% endif %}
@@ -148,90 +148,4 @@
 
     </div>
   </div>
-
-  <script>
-    jQuery(document).ready(function() {
-      // infinite scrolling
-      var infinite = new Waypoint.Infinite({
-        element: jQuery('.infinite-container')[0],
-        onBeforePageLoad: function() {
-          jQuery('.infinite-loader').show();
-        },
-        onAfterPageLoad: function($items) {
-          jQuery('.infinite-loader').hide();
-        }
-      });
-
-      // ajax like
-      jQuery('.post').on('click', '.like-button', function(event) {
-        event.preventDefault();
-        console.log("Like clicked.");
-        let $this = jQuery(this);
-
-        jQuery.ajax(this.href, {
-          success: function(result) {
-            result = result.result
-            if (parseInt(result) > 0) {
-              // Success
-              $this.prev().children().first().text(result); // this is the ".like-count" span tag
-              let unlikeHref = $this.attr('href').replace('/like', '/unlike');
-              let unlikeButton = '<a target="_blank" href="' + unlikeHref + '" class="btn btn-danger btn-sm unlike-button">Unlike</a>';
-              $this.replaceWith(unlikeButton);
-
-            } else if (result === "Already liked.") {
-              let originalText = $this.text();
-              $this.text('Already liked!');
-              window.setTimeout(function() {
-                $this.text(originalText);
-              }, 4000);
-            } else {
-              let originalText = $this.text();
-              $this.text('Error. :(');
-              window.setTimeout(function() {
-                $this.text(originalText);
-              }, 4000);
-            }
-          },
-          error: function(result) {
-            console.log('An error occured.' + result);
-          }
-        })
-      });
-
-      // ajax unlike
-      jQuery('.post').on('click', '.unlike-button', function(event) {
-        event.preventDefault();
-        console.log("unlike clicked.");
-        let $this = jQuery(this);
-
-        jQuery.ajax(this.href, {
-          success: function(result) {
-            result = result.result
-            if (parseInt(result) >= 0) {
-              $this.prev().children().first().text(result); // this is the ".like-count" span tag
-              let likeHref = $this.attr('href').replace('/unlike', '/like');
-              let likeButton = '<a target="_blank" href="' + likeHref + '" class="btn btn-success btn-sm like-button">Like</a>';
-              $this.replaceWith(likeButton);
-            } else if (result === "Not liked.") {
-              let originalText = $this.text();
-              $this.text('Not liked!');
-              window.setTimeout(function() {
-                $this.text(originalText);
-              }, 4000);
-            } else {
-              let originalText = $this.text();
-              $this.text('Error. :(');
-              window.setTimeout(function() {
-                $this.text(originalText);
-              }, 4000);
-            }
-          },
-          error: function(result) {
-            console.log('An error occured.' + result);
-          }
-        })
-      });
-
-    }); // document.ready()
-  </script>
 {% endblock content %}

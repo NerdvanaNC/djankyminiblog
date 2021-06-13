@@ -1,0 +1,120 @@
+{% extends 'main/index.html' %}
+
+{% load widget_tweaks %}
+{% load tag_alerts %}
+
+{% block title %}
+  @{{ requested_user.username }}
+{% endblock title %}
+
+{% block alerts %}
+  <div class="row justify-content-center" id="alerts">
+    <div class="col-md-6 col-12">
+      {% if request.GET %}
+        {% alert request.GET %}
+      {% elif form.errors %}
+        <div class="m-0 alert alert-danger shadow-sm alert-dismissible fade show" role="alert">
+          {{ form.errors }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock alerts %}
+
+{% block content %}
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-3 px-3"> <!-- User Card -->
+      <div class="user-profile">
+
+        <div class="card">
+          <img class="profile-avatar" src="
+          {% if requested_user.profile.avatar %}
+            {{ requested_user.profile.avatar_link }}
+          {% else %}
+            https://picsum.photos/251
+          {% endif %}" class="card-img-top" alt="Profile photo">
+          <div class="card-body">
+            <p class="pb-3 border-bottom">
+              <strong>@{{ requested_user.username }}</strong>
+            </p>
+            <p class="card-text user-bio pb-3">
+              {% if request_user.bio %}
+                {{ requested_user.bio }}
+              {% else %}
+                Very creative with their posts, but they haven't set a bio yet.
+              {% endif %}
+            </p>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong>Social:</strong>
+              <a href="#" target="_blank">@social.link</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong>Social:</strong>
+              <a href="#" target="_blank">@social.link</a>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <strong>Social:</strong>
+              <a href="#" target="_blank">@social.link</a>
+            </li>
+          </ul>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+              <span style="font-size: 0.6rem;">
+                Joined: {{ requested_user.profile.createdAt|date:"jS F, Y" }} (UTC)
+              </span>
+              <span style="font-size: 0.6rem;">
+                1000 posts
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-8 px-3"> <!-- User Posts -->
+      {% if page_obj %}
+        {% for post in page_obj %}
+          <div class="infinite-item">
+            <div class="card post mb-3">
+                <div class="card-header">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <strong class="post-author">
+                      {% if post.author %}
+                        @{{ post.author.get_username }}
+                      {% else %}
+                        Unknown Author
+                      {% endif %}
+                    </strong>
+                    <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y" }} (UTC)</span>
+                  </div>
+                </div>
+              <div class="card-body">
+                <p class="card-text">{{ post.text|safe }}</p>
+              </div>
+              <div class="card-footer text-muted">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="likes" style="font-size: 0.75rem;"><span class="like-count">{{ post.likes }}</span> upvotes</span>
+                    {% if user.is_authenticated %}
+                      {% if post not in user.profile.liked_posts.all %}
+                        <a href="/like?id={{ post.id }}" target="_blank" class="btn btn-success btn-sm like-button">
+                          Like
+                        </a>
+                      {% else %}
+                        <a href="/unlike?id={{ post.id }}" target="_blank" class="btn btn-danger btn-sm unlike-button">
+                          Unlike
+                        </a>
+                      {% endif %}
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+{% endblock content %}

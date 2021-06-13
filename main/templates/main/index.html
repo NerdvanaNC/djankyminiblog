@@ -33,6 +33,11 @@
       .help-text ul {
         padding-left: 0.9rem;
       }
+
+      .post-author a {
+        text-decoration: none;
+        color: inherit;
+      }
     </style>
     {% if form is not None %}
       {{ form.media }}
@@ -46,7 +51,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mb-2 mb-lg-0 ms-auto">
+          <ul class="navbar-nav mb-2 mb-lg-0 ms-auto align-items-center">
             <li class="nav-item">
               <a class="nav-link {% if navactive == 'home' %}active{% endif %}" aria-current="page" href="/">Home</a>
             </li>
@@ -56,7 +61,11 @@
             {% if user.is_authenticated %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Profile
+                  <img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if requested_user.profile.avatar %}
+                              {{ requested_user.profile.avatar_link }}
+                            {% else %}
+                              https://picsum.photos/50
+                            {% endif %}" alt="Profile photo">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                   <li><a class="dropdown-item" href="#">Manage</a></li>
@@ -67,7 +76,7 @@
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/register">Register</a>
+                <a class="nav-link" aria-current="page" href="/">Login</a>
               </li>
             {% endif %}
           </ul>
@@ -102,8 +111,90 @@
     <!-- Custom Scripts -->
     <script>
       jQuery(document).ready(function() {
+        // alert auto-close
         setTimeout(function() { jQuery('.alert .btn-close').click(); }, 5000)
-      });
+
+        // infinite scrolling
+        var infinite = new Waypoint.Infinite({
+          element: jQuery('.infinite-container')[0],
+          onBeforePageLoad: function() {
+            jQuery('.infinite-loader').show();
+          },
+          onAfterPageLoad: function($items) {
+            jQuery('.infinite-loader').hide();
+          }
+        });
+
+        // ajax like
+        jQuery('.post').on('click', '.like-button', function(event) {
+          event.preventDefault();
+          console.log("Like clicked.");
+          let $this = jQuery(this);
+
+          jQuery.ajax(this.href, {
+            success: function(result) {
+              result = result.result
+              if (parseInt(result) > 0) {
+                // Success
+                $this.prev().children().first().text(result); // this is the ".like-count" span tag
+                let unlikeHref = $this.attr('href').replace('/like', '/unlike');
+                let unlikeButton = '<a target="_blank" href="' + unlikeHref + '" class="btn btn-danger btn-sm unlike-button">Unlike</a>';
+                $this.replaceWith(unlikeButton);
+
+              } else if (result === "Already liked.") {
+                let originalText = $this.text();
+                $this.text('Already liked!');
+                window.setTimeout(function() {
+                  $this.text(originalText);
+                }, 4000);
+              } else {
+                let originalText = $this.text();
+                $this.text('Error. :(');
+                window.setTimeout(function() {
+                  $this.text(originalText);
+                }, 4000);
+              }
+            },
+            error: function(result) {
+              console.log('An error occured.' + result);
+            }
+          })
+        });
+
+        // ajax unlike
+        jQuery('.post').on('click', '.unlike-button', function(event) {
+          event.preventDefault();
+          console.log("unlike clicked.");
+          let $this = jQuery(this);
+
+          jQuery.ajax(this.href, {
+            success: function(result) {
+              result = result.result
+              if (parseInt(result) >= 0) {
+                $this.prev().children().first().text(result); // this is the ".like-count" span tag
+                let likeHref = $this.attr('href').replace('/unlike', '/like');
+                let likeButton = '<a target="_blank" href="' + likeHref + '" class="btn btn-success btn-sm like-button">Like</a>';
+                $this.replaceWith(likeButton);
+              } else if (result === "Not liked.") {
+                let originalText = $this.text();
+                $this.text('Not liked!');
+                window.setTimeout(function() {
+                  $this.text(originalText);
+                }, 4000);
+              } else {
+                let originalText = $this.text();
+                $this.text('Error. :(');
+                window.setTimeout(function() {
+                  $this.text(originalText);
+                }, 4000);
+              }
+            },
+            error: function(result) {
+              console.log('An error occured.' + result);
+            }
+          })
+        });
+      }); // document.ready()
     </script>
   </body>
 </html>
