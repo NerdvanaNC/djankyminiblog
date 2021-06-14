@@ -2,6 +2,7 @@
 
 {% load widget_tweaks %}
 {% load tag_alerts %}
+{% load tag_single_post %}
 
 {% block title %}
   {% if user.is_authenticated %}
@@ -89,41 +90,7 @@
       <div class="infinite-container">
 
         {% for post in page_obj %}
-          <div class="infinite-item">
-            <div class="card post my-3">
-                <div class="card-header">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <strong class="post-author">
-                      {% if post.author %}
-                        <a href="/@{{ post.author.get_username }}">@{{ post.author.get_username }}</a>
-                      {% else %}
-                        Unknown Author
-                      {% endif %}
-                    </strong>
-                    <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y" }} (UTC)</span>
-                  </div>
-                </div>
-              <div class="card-body">
-                <p class="card-text">{{ post.text|safe }}</p>
-              </div>
-              <div class="card-footer text-muted">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="likes" style="font-size: 0.75rem;"><span class="like-count">{{ post.likes }}</span> upvotes</span>
-                    {% if user.is_authenticated %}
-                      {% if post not in user.profile.liked_posts.all %}
-                        <a href="/like?id={{ post.id }}" target="_blank" class="btn btn-success btn-sm like-button">
-                          Like
-                        </a>
-                      {% else %}
-                        <a href="/unlike?id={{ post.id }}" target="_blank" class="btn btn-danger btn-sm unlike-button">
-                          Unlike
-                        </a>
-                      {% endif %}
-                    {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
+          {% single_post post user %}
         {% endfor %}
 
       </div>

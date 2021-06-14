@@ -43,7 +43,7 @@ def main(response):
         if form.is_valid():
           u = response.user
           now = timezone.now()
-          if (now - u.profile.last_post).total_seconds() > 1: # if it's been more than a day since user posted last
+          if (now - u.profile.last_post).total_seconds() > 86400: # if it's been more than a day since user posted last
             post_text = bleach.clean(form.cleaned_data['text'], tags=bleach_allowed_tags, attributes=bleach_allowed_attrs, styles=bleach_allowed_styles)
             p = Post(text = post_text, likes = 0, author = u)
             p.save()
