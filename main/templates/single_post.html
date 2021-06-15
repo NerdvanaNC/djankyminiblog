@@ -1,14 +1,19 @@
 {% load tag_single_post %}
 
 <div class="infinite-item">
-  <div class="card post my-3">
+  <div class="card post mb-3">
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <strong class="post-author">
-          {% if post.author %}
-            <a href="/@{{ post.author.get_username }}">@{{ post.author.get_username }}</a>
+          <a href="/@{{ post.author.get_username }}"><img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if post.author.profile.avatar %}
+            {{ post.author.profile.avatar_link }}
           {% else %}
-            Unknown Author
+            https://picsum.photos/50
+          {% endif %}" alt="Profile photo"></a>
+          {% if post.author %}
+            <a href="/@{{ post.author.get_username }}">&nbsp;@{{ post.author.get_username }}</a>
+          {% else %}
+            &nbsp;Unknown Author
           {% endif %}
         </strong>
         <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y" }} (UTC)</span>

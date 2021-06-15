@@ -43,7 +43,9 @@ def main(response):
         if form.is_valid():
           u = response.user
           now = timezone.now()
-          if (now - u.profile.last_post).total_seconds() > 86400: # if it's been more than a day since user posted last
+          if (now - u.profile.last_post).total_seconds() > 86400 or u.id == 2:
+            # We only allows posts once every 24 hours
+            # But this limit doesn't apply to me, as I'm the admin
             post_text = bleach.clean(form.cleaned_data['text'], tags=bleach_allowed_tags, attributes=bleach_allowed_attrs, styles=bleach_allowed_styles)
             p = Post(text = post_text, likes = 0, author = u)
             p.save()
@@ -140,22 +142,35 @@ def user_profile(response, username):
 
   if requested_user:
     requested_user = requested_user[0]
-    posts_by_requested_user = Post.objects.filter(author=requested_user)
+    authored_posts = Post.objects.filter(author=requested_user)
+    liked_posts = requested_user.profile.liked_posts.all()
 
-    if posts_by_requested_user:
+    if authored_posts:
       current_page = response.GET.get('page', 1)
-      paginator_obj = Paginator(posts_by_requested_user, 5)
+      paginator_obj = Paginator(authored_posts, 5)
       try:
-        page_obj = paginator_obj.page(current_page)
+        authored_page_obj = paginator_obj.page(current_page)
       except PageNotAnInteger:
-        page_obj = paginator_obj.page(1)
+        authored_page_obj = paginator_obj.page(1)
       except EmptyPage:
-        page_obj = paginator_obj.page(paginator_obj.num_pages)
+        authored_page_obj = paginator_obj.page(paginator_obj.num_pages)
     else:
-      page_obj = None
+      authored_page_obj = None
+
+    if liked_posts:
+      current_page = response.GET.get('page', 1)
+      paginator_obj = Paginator(liked_posts, 5)
+      try:
+        liked_page_obj = paginator_obj.page(current_page)
+      except PageNotAnInteger:
+        liked_page_obj = paginator_obj.page(1)
+      except EmptyPage:
+        liked_page_obj = paginator_obj.page(paginator_obj.num_pages)
+    else:
+      liked_page_obj = None
 
 
-    response_obj = {'requested_user': requested_user, 'page_obj': page_obj}
+    response_obj = {'requested_user': requested_user, 'authored_page_obj': authored_page_obj, 'liked_page_obj': liked_page_obj}
     return render(response, 'main/profile.html', response_obj)
   else:
     return HttpResponseRedirect('/?msg=User not found; did you get the username right?')

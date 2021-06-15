@@ -115,8 +115,14 @@
         setTimeout(function() { jQuery('.alert .btn-close').click(); }, 5000)
 
         // infinite scrolling
+
+        // Set event handlers on elements visible by default
+        // then the event handlers are set again on each scroll/load
+        jQuery('.infinite-container').on('click', '.post .like-button', ajaxLike);
+        jQuery('.infinite-container').on('click', '.post .unlike-button', ajaxUnlike);
+
         var infinite = new Waypoint.Infinite({
-          element: jQuery('.infinite-container')[0],
+          element: jQuery('.infinite-container'),
           onBeforePageLoad: function() {
             jQuery('.infinite-loader').show();
           },
@@ -125,12 +131,9 @@
           }
         });
 
-        // ajax like
-        jQuery('.post').on('click', '.like-button', function(event) {
+        function ajaxLike(event) {
           event.preventDefault();
-          console.log("Like clicked.");
           let $this = jQuery(this);
-
           jQuery.ajax(this.href, {
             success: function(result) {
               result = result.result
@@ -158,15 +161,12 @@
             error: function(result) {
               console.log('An error occured.' + result);
             }
-          })
-        });
+          });
+        } // ajaxLike() end
 
-        // ajax unlike
-        jQuery('.post').on('click', '.unlike-button', function(event) {
+        function ajaxUnlike(event) {
           event.preventDefault();
-          console.log("unlike clicked.");
           let $this = jQuery(this);
-
           jQuery.ajax(this.href, {
             success: function(result) {
               result = result.result
@@ -192,8 +192,9 @@
             error: function(result) {
               console.log('An error occured.' + result);
             }
-          })
-        });
+          });
+        } // ajaxUnlike() end
+
       }); // document.ready()
     </script>
   </body>
