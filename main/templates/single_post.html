@@ -27,13 +27,13 @@
         <span class="likes" style="font-size: 0.75rem;"><span class="like-count">{{ post.likes }}</span> upvotes</span>
         {% if user.is_authenticated %}
           {% if post not in user.profile.liked_posts.all %}
-            <a href="/like?id={{ post.id }}" target="_blank" class="btn btn-success btn-sm like-button">
+            <button data-post-id="{{ post.id }}" class="btn btn-success btn-sm like-button">
               Like
-            </a>
+            </button>
           {% else %}
-            <a href="/unlike?id={{ post.id }}" target="_blank" class="btn btn-danger btn-sm unlike-button">
+            <button data-post-id="{{ post.id }}" class="btn btn-danger btn-sm unlike-button">
               Unlike
-            </a>
+            </button>
           {% endif %}
         {% endif %}
       </div>

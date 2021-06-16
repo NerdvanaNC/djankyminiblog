@@ -143,7 +143,6 @@ def user_profile(response, username):
   if requested_user:
     requested_user = requested_user[0]
     authored_posts = Post.objects.filter(author=requested_user)
-    liked_posts = requested_user.profile.liked_posts.all()
 
     if authored_posts:
       current_page = response.GET.get('page', 1)
@@ -157,20 +156,7 @@ def user_profile(response, username):
     else:
       authored_page_obj = None
 
-    if liked_posts:
-      current_page = response.GET.get('page', 1)
-      paginator_obj = Paginator(liked_posts, 5)
-      try:
-        liked_page_obj = paginator_obj.page(current_page)
-      except PageNotAnInteger:
-        liked_page_obj = paginator_obj.page(1)
-      except EmptyPage:
-        liked_page_obj = paginator_obj.page(paginator_obj.num_pages)
-    else:
-      liked_page_obj = None
-
-
-    response_obj = {'requested_user': requested_user, 'authored_page_obj': authored_page_obj, 'liked_page_obj': liked_page_obj}
+    response_obj = {'requested_user': requested_user, 'authored_page_obj': authored_page_obj}
     return render(response, 'main/profile.html', response_obj)
   else:
     return HttpResponseRedirect('/?msg=User not found; did you get the username right?')

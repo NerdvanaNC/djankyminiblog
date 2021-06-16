@@ -134,14 +134,14 @@
         function ajaxLike(event) {
           event.preventDefault();
           let $this = jQuery(this);
-          jQuery.ajax(this.href, {
+          let postId = $this.attr('data-post-id');
+          jQuery.ajax(('/like?id=' + postId), {
             success: function(result) {
               result = result.result
               if (parseInt(result) > 0) {
                 // Success
                 $this.prev().children().first().text(result); // this is the ".like-count" span tag
-                let unlikeHref = $this.attr('href').replace('/like', '/unlike');
-                let unlikeButton = '<a target="_blank" href="' + unlikeHref + '" class="btn btn-danger btn-sm unlike-button">Unlike</a>';
+                let unlikeButton = '<button data-post-id="' + postId + '" data-post-target="unlike" target="_blank" class="btn btn-danger btn-sm unlike-button">Unlike</button>';
                 $this.replaceWith(unlikeButton);
 
               } else if (result === "Already liked.") {
@@ -167,13 +167,13 @@
         function ajaxUnlike(event) {
           event.preventDefault();
           let $this = jQuery(this);
-          jQuery.ajax(this.href, {
+          let postId = $this.attr('data-post-id');
+          jQuery.ajax(('/unlike?id=' + postId), {
             success: function(result) {
               result = result.result
               if (parseInt(result) >= 0) {
                 $this.prev().children().first().text(result); // this is the ".like-count" span tag
-                let likeHref = $this.attr('href').replace('/unlike', '/like');
-                let likeButton = '<a target="_blank" href="' + likeHref + '" class="btn btn-success btn-sm like-button">Like</a>';
+                let likeButton = '<button data-post-id="' + postId + '" class="btn btn-success btn-sm like-button">Like</button>';
                 $this.replaceWith(likeButton);
               } else if (result === "Not liked.") {
                 let originalText = $this.text();
