@@ -61,15 +61,14 @@
             {% if user.is_authenticated %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if requested_user.profile.avatar %}
-                              {{ requested_user.profile.avatar_link }}
+                  <img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if user.profile.avatar %}
+                              {{ user.profile.avatar_link }}
                             {% else %}
                               https://picsum.photos/50
                             {% endif %}" alt="Profile photo">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                  <li><a class="dropdown-item" href="#">Manage</a></li>
-                  <li><a class="dropdown-item" href="#">Settings</a></li>
+                  <li><a class="dropdown-item" href="/@{{ user.username }}">Manage</a></li>
                   <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
                 </ul>

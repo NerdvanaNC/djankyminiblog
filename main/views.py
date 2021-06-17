@@ -71,7 +71,11 @@ def main(response):
     else:
       form = AuthenticationForm()
 
-  response_obj = {'form': form, 'page_obj': page_obj, 'navactive': 'home'}
+  response_obj = {
+    'form': form,
+    'page_obj': page_obj,
+    'navactive': 'home',
+  }
   return render(response, 'main/homepage.html', response_obj)
 
 
@@ -139,13 +143,12 @@ def ajax_unlike(response):
 
 def user_profile(response, username):
   requested_user = User.objects.filter(username=username)
-  view_path = response.path
   if requested_user:
     requested_user = requested_user[0]
     authored_posts = Post.objects.filter(author=requested_user)
     liked_posts = requested_user.profile.liked_posts.all()
 
-    if view_path.find('liked') >= 0:
+    if response.path.find('liked') >= 0:
       if liked_posts:
         current_page = response.GET.get('page', 1)
         paginator_obj = Paginator(liked_posts, 5)
@@ -174,7 +177,12 @@ def user_profile(response, username):
 
       page_active = 'authored'
 
-    response_obj = {'requested_user': requested_user, 'page_obj': page_obj, 'active': page_active}
+    response_obj = {
+      'requested_user': requested_user,
+      'page_obj': page_obj,
+      'active': page_active,
+      'num_posts': authored_posts.count(),
+    }
     return render(response, 'main/profile.html', response_obj)
   else:
     return HttpResponseRedirect('/?msg=User not found; did you get the username right?')

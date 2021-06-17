@@ -47,27 +47,13 @@
               {% endif %}
             </p>
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <strong>Social:</strong>
-              <a href="#" target="_blank">@social.link</a>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <strong>Social:</strong>
-              <a href="#" target="_blank">@social.link</a>
-            </li>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <strong>Social:</strong>
-              <a href="#" target="_blank">@social.link</a>
-            </li>
-          </ul>
           <div class="card-footer">
             <div class="d-flex justify-content-between align-items-center">
               <span style="font-size: 0.6rem;">
                 Joined: {{ requested_user.profile.createdAt|date:"jS F, Y" }} (UTC)
               </span>
               <span style="font-size: 0.6rem;">
-                1000 posts
+                {{ num_posts }} posts
               </span>
             </div>
           </div>
@@ -90,14 +76,16 @@
 
 
     <div class="col-12 col-lg-8 px-3"> <!-- User Posts -->
-      <div class="d-flex align-items-start">
-        <div class="infinite-container mb-3">
-          {% if page_obj %}
-            {% for post in page_obj %}
-              {% single_post post user %}
-            {% endfor %}
-          {% endif %}
-        </div>
+      <div class="infinite-container mb-3">
+        {% if page_obj %}
+          {% for post in page_obj %}
+            {% single_post post user %}
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-info text-center">
+            <strong>Nothing here, actually.</strong>
+          </div>
+        {% endif %}
       </div>
 
       {% if page_obj.has_next and user.is_authenticated %}
@@ -109,7 +97,7 @@
       </div>
 
       {% if not user.is_authenticated %}
-        <div class="row justify-content-center mt-5">
+        <div class="row justify-content-center mt-3">
           <div class="col-12 col-lg-6 text-center">
             <div class="alert alert-danger">
               <strong><a class="alert-link" href="/">Log in</a> to see more by @{{ requested_user.username }}.</strong>
