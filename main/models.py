@@ -6,9 +6,9 @@ from django.dispatch import receiver
 import datetime
 
 # Model Helpers
-
 def now_minus_25hours():
   return datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=25)
+
 
 # Create your models here.
 class Post(models.Model):
@@ -37,6 +37,7 @@ class Profile(models.Model):
   createdAt = models.DateTimeField(auto_now_add=True)
   last_post = models.DateTimeField(default=now_minus_25hours)
   liked_posts = models.ManyToManyField(Post)
+  bio = models.CharField(max_length=200, default='Very creative with their posts, but they haven\'t added a bio yet.')
   # more profile details will go here
   # to extend the base User model provided
   # by Django.

@@ -39,12 +39,8 @@
             <p class="pb-3 border-bottom">
               <strong>@{{ requested_user.username }}</strong>
             </p>
-            <p class="card-text user-bio pb-3">
-              {% if request_user.bio %}
-                {{ requested_user.bio }}
-              {% else %}
-                Very creative with their posts, but they haven't set a bio yet.
-              {% endif %}
+            <p class="card-text user-bio pb-2">
+              {{ requested_user.profile.bio }}
             </p>
           </div>
           <div class="card-footer">
