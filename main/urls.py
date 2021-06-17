@@ -9,5 +9,6 @@ urlpatterns = [
     path('tinymce/', include('tinymce.urls')),
     path('like/', views.ajax_like),
     path('unlike/', views.ajax_unlike),
-    path('@<str:username>', views.user_profile),
+    path('@<str:username>/', views.user_profile),
+    path('@<str:username>/liked/', views.user_profile),
 ]

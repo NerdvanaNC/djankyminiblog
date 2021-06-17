@@ -139,24 +139,42 @@ def ajax_unlike(response):
 
 def user_profile(response, username):
   requested_user = User.objects.filter(username=username)
-
+  view_path = response.path
   if requested_user:
     requested_user = requested_user[0]
     authored_posts = Post.objects.filter(author=requested_user)
+    liked_posts = requested_user.profile.liked_posts.all()
 
-    if authored_posts:
-      current_page = response.GET.get('page', 1)
-      paginator_obj = Paginator(authored_posts, 5)
-      try:
-        authored_page_obj = paginator_obj.page(current_page)
-      except PageNotAnInteger:
-        authored_page_obj = paginator_obj.page(1)
-      except EmptyPage:
-        authored_page_obj = paginator_obj.page(paginator_obj.num_pages)
+    if view_path.find('liked') >= 0:
+      if liked_posts:
+        current_page = response.GET.get('page', 1)
+        paginator_obj = Paginator(liked_posts, 5)
+        try:
+          page_obj = paginator_obj.page(current_page)
+        except PageNotAnInteger:
+          page_obj = paginator_obj.page(1)
+        except EmptyPage:
+          page_obj = paginator_obj.page(paginator_obj.num_pages)
+      else:
+        page_obj = None
+
+      page_active = 'liked'
     else:
-      authored_page_obj = None
+      if authored_posts:
+        current_page = response.GET.get('page', 1)
+        paginator_obj = Paginator(authored_posts, 5)
+        try:
+          page_obj = paginator_obj.page(current_page)
+        except PageNotAnInteger:
+          page_obj = paginator_obj.page(1)
+        except EmptyPage:
+          page_obj = paginator_obj.page(paginator_obj.num_pages)
+      else:
+        page_obj = None
 
-    response_obj = {'requested_user': requested_user, 'authored_page_obj': authored_page_obj}
+      page_active = 'authored'
+
+    response_obj = {'requested_user': requested_user, 'page_obj': page_obj, 'active': page_active}
     return render(response, 'main/profile.html', response_obj)
   else:
     return HttpResponseRedirect('/?msg=User not found; did you get the username right?')

@@ -28,7 +28,6 @@
   <div class="row justify-content-center">
     <div class="col-12 col-lg-3 px-3"> <!-- User Card -->
       <div class="user-profile">
-
         <div class="card">
           <img class="profile-avatar" src="
           {% if requested_user.profile.avatar %}
@@ -73,52 +72,37 @@
             </div>
           </div>
         </div>
-
-        <div class="nav flex-column nav-pills mt-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <button class="nav-link active" id="v-pills-authored-tab" data-bs-toggle="pill" data-bs-target="#v-pills-authored" type="button" role="tab" aria-controls="v-pills-authored" aria-selected="true">Authored</button>
-          <button class="nav-link" id="v-pills-liked-tab" data-bs-toggle="pill" data-bs-target="#v-pills-liked" type="button" role="tab" aria-controls="v-pills-liked" aria-selected="false">Liked</button>
-        </div>
-
       </div>
+
+      <!-- Authored / Liked Tabbed Nav -->
+      <div class="user-tabs my-3">
+        <ul class="nav flex-column nav-pills nav-fill">
+          <li class="nav-item">
+            <a href="/@{{ requested_user.username }}" class="nav-link {% if active == 'authored' %}active{% endif %}">Authored</a>
+          </li>
+          <li class="nav-item">
+            <a href="/@{{ requested_user.username }}/liked" class="nav-link {% if active == 'liked' %}active{% endif %}">Liked</a>
+          </li>
+        </ul>
+      </div>
+
     </div>
 
 
     <div class="col-12 col-lg-8 px-3"> <!-- User Posts -->
       <div class="d-flex align-items-start">
-        <div class="tab-content" id="v-pills-tabContent">
-          <!-- Authored Posts -->
-          <div class="tab-pane fade show active authored-posts" id="v-pills-authored"
-            role="tabpanel" aria-labelledby="v-pills-authored-tab">
-            <div class="infinite-container mb-3">
-              {% if authored_page_obj %}
-                {% for post in authored_page_obj %}
-                  {% single_post post user %}
-                {% endfor %}
-              {% endif %}
-            </div>
-
-            {% if authored_page_obj.has_next and user.is_authenticated %}
-              <a href="?page={{ authored_page_obj.next_page_number }}" class="infinite-more-link"></a>
-            {% endif %}
-          </div> <!-- Authored Posts -->
-
-          <!-- Liked Posts -->
-          <div class="tab-pane fade liked-posts" id="v-pills-liked"
-            role="tabpanel" aria-labelledby="v-pills-liked-tab">
-              <div class="infinite-container mb-3">
-                {% if liked_page_obj %}
-                  {% for post in liked_page_obj %}
-                    {% single_post post user %}
-                  {% endfor %}
-                {% endif %}
-              </div>
-
-              {% if liked_page_obj.has_next and user.is_authenticated %}
-                <a href="?page={{ liked_page_obj.next_page_number }}" class="infinite-more-link"></a>
-              {% endif %}
-            </div> <!-- Liked Posts -->
+        <div class="infinite-container mb-3">
+          {% if page_obj %}
+            {% for post in page_obj %}
+              {% single_post post user %}
+            {% endfor %}
+          {% endif %}
         </div>
       </div>
+
+      {% if page_obj.has_next and user.is_authenticated %}
+        <a href="?page={{ page_obj.next_page_number }}" class="infinite-more-link"></a>
+      {% endif %}
 
       <div class="infinite-loader mt-5 text-center" style="display: none;">
         <div class="spinner-border" role="status" aria-hidden="true"></div>
