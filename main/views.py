@@ -73,12 +73,22 @@ def main(response):
       form = AuthenticationForm()
 
   # Time to next post
-  seconds_since_last_post = (timezone.now() - response.user.profile.last_post).total_seconds()
-  seconds_to_last_post = 86400 - seconds_since_last_post
-  if seconds_since_last_post >= 864000:
-    time_to_next_post = "no_wait_needed"
+
+  if response.user.is_authenticated:
+    # How long ago did you post?
+    seconds_since_last_post = (timezone.now() - response.user.profile.last_post).total_seconds()
+    print("***DEBUG*** - seconds_since_last_post:", seconds_since_last_post)
+    # How long till you can post again?
+    seconds_to_next_post = 86400 - seconds_since_last_post
+    print("***DEBUG*** - seconds_to_next_post:", seconds_to_next_post)
+    # If it's been more than or equal to 24 hours
+    if seconds_to_next_post <= 0:
+      time_to_next_post = "no_wait_needed"
+    else:
+      # Otherwise a countdown showing you how many hours to the next post
+      time_to_next_post = str(datetime.timedelta(seconds=seconds_to_next_post)).split('.')[0] # chop off ms
   else:
-    time_to_next_post = str(datetime.timedelta(seconds=seconds_to_last_post)).split('.')[0] # chop off ms
+    time_to_next_post = ""
 
   response_obj = {
     'form': form,
