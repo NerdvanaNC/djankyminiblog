@@ -10,11 +10,22 @@ from django.utils import timezone
 import bleach
 import datetime
 import re
+import random
 
 bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'span']
 bleach_allowed_attrs = { '*': ['style'], 'a': ['href', 'title', '_target'] }
 bleach_allowed_styles = ['color', 'font-family', 'font-size', 'text-decoration', 'text-align']
 
+# Quotes uwu
+quotes_list = {
+  'Anaïs Nin': 'We write to taste life twice, in the moment and in retrospect.',
+  'Jack Kerouac, The Dharma Bums': 'One day I will find the right words, and they will be simple.',
+  'Saul Bellow': 'You never have to change anything you got up in the middle of the night to write.',
+  'Ray Bradbury, Zen in the Art of Writing': 'You must stay drunk on writing so reality cannot destroy you.',
+  'Margaret Atwood': 'A word after a word after a word is power.',
+  'Charles Baudelaire': 'Always be a poet, even in prose.',
+  'Flannery O\'Connor': 'I write to discover what I know.',
+}
 
 # Create your views here.
 def main(response):
@@ -77,10 +88,8 @@ def main(response):
   if response.user.is_authenticated:
     # How long ago did you post?
     seconds_since_last_post = (timezone.now() - response.user.profile.last_post).total_seconds()
-    print("***DEBUG*** - seconds_since_last_post:", seconds_since_last_post)
     # How long till you can post again?
     seconds_to_next_post = 86400 - seconds_since_last_post
-    print("***DEBUG*** - seconds_to_next_post:", seconds_to_next_post)
     # If it's been more than or equal to 24 hours
     if seconds_to_next_post <= 0:
       time_to_next_post = "no_wait_needed"
@@ -90,13 +99,20 @@ def main(response):
   else:
     time_to_next_post = ""
 
+  # Quotes!
+
+  random_quote_author, random_quote_quote = random.choice(list(quotes_list.items()))
+  random_quote = {'author': random_quote_author, 'quote': random_quote_quote}
+
   response_obj = {
     'form': form,
     'page_obj': page_obj,
     'navactive': 'home',
     'time_to_next_post': time_to_next_post,
+    'quote': random_quote,
   }
   return render(response, 'main/homepage.html', response_obj)
+
 
 
 def custom_register(response):
@@ -116,9 +132,12 @@ def custom_register(response):
   return render(response, 'main/register.html', {'form': form})
 
 
+
 def custom_logout(response):
   logout(response)
   return HttpResponseRedirect('/?msg=You\'ve logged out.')
+
+
 
 def ajax_like(response):
   if response.GET.get('id'):
@@ -140,6 +159,8 @@ def ajax_like(response):
   else:
     return JsonResponse({'result': "Invalid arguments."})
 
+
+
 def ajax_unlike(response):
   if response.GET.get('id'):
     p = Post.objects.filter(id=(response.GET.get('id')))
@@ -159,6 +180,7 @@ def ajax_unlike(response):
       return JsonResponse({'result': 'Not found.'})
   else:
     return JsonResponse({'result': "Invalid arguments."})
+
 
 
 def user_profile(response, username):

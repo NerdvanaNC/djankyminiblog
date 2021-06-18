@@ -31,44 +31,70 @@
   <div class="row justify-content-center new-post">
     <div class="col-12 col-lg-8 px-3">
       {% if user.is_authenticated %}
-        <!-- If the user's logged in, we have the post form -->
-        <div class="card my-3">
-          <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center new-post-current-user">
-              <strong><a href="/@{{ user.username }}">&nbsp;@{{ user.username }}</a></strong>
-              <span style="font-size: 0.75rem;">
-                {% if time_to_next_post == "no_wait_needed" %}
-                  <span class="text-success">You can post now!</span>
-                {% else %}
-                  <span class="text-danger">Time to next post: {{ time_to_next_post }}</span>
-                {% endif %}
-              </span>
+        {# If the user's logged in, we check if they can actually post w.r.t time #}
+        {% if time_to_next_post == "no_wait_needed" %}
+          {# If they're logged in and allowed to post again #}
+          <div class="card my-3">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center new-post-current-user">
+                <strong><a href="/@{{ user.username }}">&nbsp;@{{ user.username }}</a></strong>
+                <span style="font-size: 0.75rem;">
+                  Last Post: {{ user.profile.last_post|date:"h:i A | jS F, Y (e)" }}
+                </span>
+              </div>
+            </div>
+            <div class="card-body">
+              <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                  <div class="mb-3">
+                    {% render_field field class="form-control" %}
+                    {% if field.help_text %}
+                      <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-outline-primary btn-lg" name="post">Post</button>
+                </div>
+              </form>
+            </div>
+            <div class="card-footer text-end py-3">
+              <figure class="mb-0">
+                <blockquote class="blockquote">
+                  <p style="font-size: 0.9rem;">"{{ quote.quote }}"</p>
+                </blockquote>
+                <figcaption class="blockquote-footer mb-0" style="font-size: 0.8rem;">
+                  <cite title="Quotee">{{ quote.author }}</cite>
+                </figcaption>
+              </figure>
             </div>
           </div>
-          <div class="container py-3 px-3">
-            <form method="post">
-              {% csrf_token %}
-              {% for field in form %}
-                <div class="mb-3">
-                  {% render_field field class="form-control" %}
-                  {% if field.help_text %}
-                    <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
-                  {% endif %}
-                </div>
-              {% endfor %}
-              <div class="d-grid">
-                <button type="submit" class="btn btn-outline-primary btn-lg" name="post">Post</button>
+        {% else %} {# Time to post #}
+          <div class="card my-3">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center new-post-current-user">
+                <strong><a href="/@{{ user.username }}">&nbsp;@{{ user.username }}</a></strong>
+                <span style="font-size: 0.75rem;">
+                  Last Post: {{ user.profile.last_post|date:"h:i A | jS F, Y (e)" }}
+                </span>
               </div>
-            </form>
+            </div>
+            <div class="card-body">
+              <div class="wait-to-post text-center py-4">
+                <h1 class="display-1">{{ time_to_next_post }}</h1>
+                <h2>to your next story.</h2>
+              </div>
+            </div>
           </div>
-        </div>
-      {% else %}
-        <!-- If user not logged in - Login form -->
+        {% endif %} {# Time to post #}
+      {% else %} {# User Auth #}
+        {# If user not logged in - Login form #}
         <div class="card my-3">
           <div class="card-header">
             <strong>Login</strong>
           </div>
-          <div class="container py-3 px-3">
+          <div class="card-body">
             <form method="post">
               {% csrf_token %}
               {% for field in form %}
@@ -87,7 +113,7 @@
             </form>
           </div>
         </div>
-      {% endif %}
+      {% endif %} {# User Auth #}
     </div>
   </div>
   <hr style="width: 40%;" class="mx-auto">
