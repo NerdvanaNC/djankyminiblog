@@ -5,18 +5,18 @@
     <div class="card-header">
       <div class="d-flex justify-content-between align-items-center">
         <strong class="post-author">
-          <a href="/@{{ post.author.get_username }}"><img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if post.author.profile.avatar %}
+          <a href="/@{{ post.author.username }}"><img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if post.author.profile.avatar %}
             {{ post.author.profile.avatar_link }}
           {% else %}
             https://picsum.photos/50
           {% endif %}" alt="Profile photo"></a>
           {% if post.author %}
-            <a href="/@{{ post.author.get_username }}">&nbsp;@{{ post.author.get_username }}</a>
+            <a href="/@{{ post.author.username }}">&nbsp;@{{ post.author.username }}</a>
           {% else %}
             &nbsp;Unknown Author
           {% endif %}
         </strong>
-        <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y" }} (UTC)</span>
+        <span style="font-size: 0.75rem;" class="post-time">{{ post.createdAt|date:"H:i | jS F, Y (e)" }}</span>
       </div>
     </div>
     <div class="card-body">
@@ -27,11 +27,11 @@
         <span class="likes" style="font-size: 0.75rem;"><span class="like-count">{{ post.likes }}</span> upvotes</span>
         {% if user.is_authenticated %}
           {% if post not in user.profile.liked_posts.all %}
-            <button data-post-id="{{ post.id }}" class="btn btn-success btn-sm like-button">
+            <button data-post-id="{{ post.id }}" class="btn btn-outline-success btn-sm like-button">
               Like
             </button>
           {% else %}
-            <button data-post-id="{{ post.id }}" class="btn btn-danger btn-sm unlike-button">
+            <button data-post-id="{{ post.id }}" class="btn btn-outline-danger btn-sm unlike-button">
               Unlike
             </button>
           {% endif %}

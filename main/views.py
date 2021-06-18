@@ -4,11 +4,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .forms import NewPost, RegisterForm
+from .forms import NewPost, RegisterForm, UpdateProfileBio
 from .models import Post
+from django.utils import timezone
 import bleach
 import datetime
-from django.utils import timezone
+import re
 
 bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'span']
 bleach_allowed_attrs = { '*': ['style'], 'a': ['href', 'title', '_target'] }
@@ -71,10 +72,19 @@ def main(response):
     else:
       form = AuthenticationForm()
 
+  # Time to next post
+  seconds_since_last_post = (timezone.now() - response.user.profile.last_post).total_seconds()
+  seconds_to_last_post = 86400 - seconds_since_last_post
+  if seconds_since_last_post >= 864000:
+    time_to_next_post = "no_wait_needed"
+  else:
+    time_to_next_post = str(datetime.timedelta(seconds=seconds_to_last_post)).split('.')[0] # chop off ms
+
   response_obj = {
     'form': form,
     'page_obj': page_obj,
     'navactive': 'home',
+    'time_to_next_post': time_to_next_post,
   }
   return render(response, 'main/homepage.html', response_obj)
 
@@ -177,11 +187,25 @@ def user_profile(response, username):
 
       page_active = 'authored'
 
+    if response.method == "POST":
+      form = UpdateProfileBio(response.POST)
+      if (form.is_valid()) and response.user == requested_user:
+        bio = form.cleaned_data['bio']
+        if bio != "":
+          bio = re.sub("(\\r\\n){3,}", "\r\n\r\n", bio)
+          requested_user.profile.bio = bio
+          requested_user.profile.save()
+      form = UpdateProfileBio()
+    else:
+      form = UpdateProfileBio()
+
+
     response_obj = {
       'requested_user': requested_user,
       'page_obj': page_obj,
       'active': page_active,
       'num_posts': authored_posts.count(),
+      'form': form,
     }
     return render(response, 'main/profile.html', response_obj)
   else:

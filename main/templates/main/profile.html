@@ -39,9 +39,30 @@
             <p class="pb-3 border-bottom">
               <strong>@{{ requested_user.username }}</strong>
             </p>
-            <p class="card-text user-bio pb-2">
-              {{ requested_user.profile.bio }}
-            </p>
+            <div class="card-text user-bio pb-2">
+              <p id="bio-text">{{ requested_user.profile.bio|safe }}</p>
+              {% if requested_user == user %}
+                <div class="d-grid">
+                  <button id="bio-update-form-show" class="btn btn-outline-secondary btn-sm" style="font-size: 0.7rem;">
+                    Change Bio
+                  </button>
+                </div>
+                {% if form %}
+                  <form method="post" id="bio-update-form" style="display: none;">
+                    {% csrf_token %}
+                    {% render_field form.bio class="form-control mb-2" placeholder=requested_user.profile.bio rows='5' %}
+                    <div class="d-flex">
+                      <button id="bio-update-submit" class="btn btn-outline-primary btn-sm flex-fill mx-1" style="font-size: 0.7rem;" type="submit">
+                        Update
+                      </button>
+                      <button id="bio-update-form-hide" class="btn btn-outline-danger btn-sm flex-fill mx-1" style="font-size: 0.7rem;" type="button">
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                {% endif %}
+              {% endif %}
+            </div>
           </div>
           <div class="card-footer">
             <div class="d-flex justify-content-between align-items-center">

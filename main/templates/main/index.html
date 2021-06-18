@@ -34,9 +34,14 @@
         padding-left: 0.9rem;
       }
 
-      .post-author a {
+      .post-author a,
+      .new-post-current-user a {
         text-decoration: none;
         color: inherit;
+      }
+
+      .user-profile .user-bio p {
+        white-space: pre-line;
       }
     </style>
     {% if form is not None %}
@@ -65,7 +70,7 @@
                               {{ user.profile.avatar_link }}
                             {% else %}
                               https://picsum.photos/50
-                            {% endif %}" alt="Profile photo">
+                            {% endif %}" alt="@{{ user.username }}">
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                   <li><a class="dropdown-item" href="/@{{ user.username }}">Manage</a></li>
@@ -95,7 +100,7 @@
       <div class="container">
         <div class="row">
           <div class="col-sm-6 col-12 text-muted small text-start">
-            © Nickunj Chopra<br>
+            Brought to you by Nickunj Chopra<br>
             <a class="link-secondary" href="https://nickunjchopra.com/" target="_blank">(https://nickunjchopra.com/)</a>
           </div>
           <div class="col-sm-6 col-12 text-muted small text-end">
@@ -112,6 +117,21 @@
       jQuery(document).ready(function() {
         // alert auto-close
         setTimeout(function() { jQuery('.alert .btn-close').click(); }, 5000)
+
+        // user bio update form show/hide
+        let $bioCard = jQuery('.user-profile .user-bio');
+        $bioCard.on('click', '#bio-update-form-show', function(event) {
+          let $this = jQuery(this);
+          $this.hide();
+          jQuery('#bio-text').hide();
+          jQuery('#bio-update-form').show();
+        });
+
+        $bioCard.on('click', '#bio-update-form-hide', function(event) {
+          jQuery('#bio-update-form').hide();
+          jQuery('#bio-text').show();
+          jQuery('#bio-update-form-show').show();
+        });
 
         // infinite scrolling
 
@@ -140,7 +160,7 @@
               if (parseInt(result) > 0) {
                 // Success
                 $this.prev().children().first().text(result); // this is the ".like-count" span tag
-                let unlikeButton = '<button data-post-id="' + postId + '" data-post-target="unlike" target="_blank" class="btn btn-danger btn-sm unlike-button">Unlike</button>';
+                let unlikeButton = '<button data-post-id="' + postId + '" data-post-target="unlike" target="_blank" class="btn btn-outline-danger btn-sm unlike-button">Unlike</button>';
                 $this.replaceWith(unlikeButton);
 
               } else if (result === "Already liked.") {
@@ -172,7 +192,7 @@
               result = result.result
               if (parseInt(result) >= 0) {
                 $this.prev().children().first().text(result); // this is the ".like-count" span tag
-                let likeButton = '<button data-post-id="' + postId + '" class="btn btn-success btn-sm like-button">Like</button>';
+                let likeButton = '<button data-post-id="' + postId + '" class="btn btn-outline-success btn-sm like-button">Like</button>';
                 $this.replaceWith(likeButton);
               } else if (result === "Not liked.") {
                 let originalText = $this.text();
