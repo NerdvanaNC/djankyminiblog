@@ -31,19 +31,19 @@
   <div class="row justify-content-center new-post">
     <div class="col-12 col-lg-8 px-3">
       {% if user.is_authenticated %}
-        {# If the user's logged in, we check if they can actually post w.r.t time #}
-        {% if time_to_next_post == "no_wait_needed" %}
-          {# If they're logged in and allowed to post again #}
-          <div class="card my-3">
-            <div class="card-header">
-              <div class="d-flex justify-content-between align-items-center new-post-current-user">
-                <strong><a href="/@{{ user.username }}">&nbsp;@{{ user.username }}</a></strong>
-                <span style="font-size: 0.75rem;">
-                  Last Post: {{ user.profile.last_post|date:"h:i A | jS F, Y (e)" }}
-                </span>
-              </div>
+        {# If the user's logged in, we render the card, but check time_to_post later #}
+        <div class="card my-3">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center new-post-current-user">
+              <strong><a href="/@{{ user.username }}">&nbsp;@{{ user.username }}</a></strong>
+              <span style="font-size: 0.75rem;">
+                Last Post: {{ user.profile.last_post|date:"h:i A | jS F, Y (e)" }}
+              </span>
             </div>
-            <div class="card-body">
+          </div>
+          <div class="card-body">
+            {% if time_to_next_post == "no_wait_needed" %}
+              {# If they're logged in and allowed to post again #}
               <form method="post">
                 {% csrf_token %}
                 {% for field in form %}
@@ -58,36 +58,24 @@
                   <button type="submit" class="btn btn-outline-primary btn-lg" name="post">Post</button>
                 </div>
               </form>
-            </div>
-            <div class="card-footer text-end py-3">
-              <figure class="mb-0">
-                <blockquote class="blockquote">
-                  <p style="font-size: 0.9rem;">"{{ quote.quote }}"</p>
-                </blockquote>
-                <figcaption class="blockquote-footer mb-0" style="font-size: 0.8rem;">
-                  <cite title="Quotee">{{ quote.author }}</cite>
-                </figcaption>
-              </figure>
-            </div>
-          </div>
-        {% else %} {# Time to post #}
-          <div class="card my-3">
-            <div class="card-header">
-              <div class="d-flex justify-content-between align-items-center new-post-current-user">
-                <strong><a href="/@{{ user.username }}">&nbsp;@{{ user.username }}</a></strong>
-                <span style="font-size: 0.75rem;">
-                  Last Post: {{ user.profile.last_post|date:"h:i A | jS F, Y (e)" }}
-                </span>
-              </div>
-            </div>
-            <div class="card-body">
+            {% else %} {# Time to post #}
               <div class="wait-to-post text-center py-4">
-                <h1 class="display-1">{{ time_to_next_post }}</h1>
+                <h1 class="display-1" id="post-countdown">{{ time_to_next_post }}</h1>
                 <h2>to your next story.</h2>
               </div>
-            </div>
+            {% endif %} {# Time to post #}
           </div>
-        {% endif %} {# Time to post #}
+          <div class="card-footer text-end py-3">
+            <figure class="mb-0">
+              <blockquote class="blockquote">
+                <p style="font-size: 0.9rem;">"{{ quote.quote }}"</p>
+              </blockquote>
+              <figcaption class="blockquote-footer mb-0" style="font-size: 0.8rem;">
+                <cite title="Quotee">{{ quote.author }}</cite>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
       {% else %} {# User Auth #}
         {# If user not logged in - Login form #}
         <div class="card my-3">
@@ -147,4 +135,18 @@
 
     </div>
   </div>
+
+  {% if time_to_next_post %}
+    <script>
+      jQuery(document).ready(function() {
+        let currentTime = new Date();
+        let countdownDate = new Date(currentTime.getTime() + {{ javascript.seconds_to_next_post }} * 1000);
+        jQuery('#post-countdown').countdown(countdownDate, function(event) {
+          jQuery(this).text(
+            event.strftime('%H:%M:%S')
+          );
+        });
+      }); // document.ready()
+    </script>
+  {% endif %}
 {% endblock content %}

@@ -98,6 +98,7 @@ def main(response):
       time_to_next_post = str(datetime.timedelta(seconds=seconds_to_next_post)).split('.')[0] # chop off ms
   else:
     time_to_next_post = ""
+    seconds_to_next_post = 86400
 
   # Quotes!
 
@@ -109,6 +110,9 @@ def main(response):
     'page_obj': page_obj,
     'navactive': 'home',
     'time_to_next_post': time_to_next_post,
+    'javascript': {
+      'seconds_to_next_post': seconds_to_next_post,
+    },
     'quote': random_quote,
   }
   return render(response, 'main/homepage.html', response_obj)
