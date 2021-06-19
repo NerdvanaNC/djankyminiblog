@@ -13,18 +13,11 @@
 {% endblock title %}
 
 {% block alerts %}
-  <div class="row justify-content-center" id="alerts">
-    <div class="col-md-6 col-12">
-      {% if request.GET %}
-        {% alert request.GET %}
-      {% elif form.errors %}
-        <div class="m-0 alert alert-danger shadow-sm alert-dismissible fade show" role="alert">
-          {{ form.errors }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endif %}
-    </div>
-  </div>
+  {% if messages %}
+    {% for message in messages %}
+      {% alert message %}
+    {% endfor %}
+  {% endif %}
 {% endblock alerts %}
 
 {% block content %}

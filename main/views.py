@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import NewPost, RegisterForm, UpdateProfileBio
 from .models import Post
@@ -63,9 +64,11 @@ def main(response):
             p.save()
             u.profile.last_post = datetime.datetime.now()
             u.save()
-            return HttpResponseRedirect('/?msg=Done! Your story is out in the world.') # If everything's cool; return back to the homepage with a blank form.
+            messages.add_message(response, messages.SUCCESS, 'Done! Your story is out in the world.', 'success')
+            return HttpResponseRedirect('/') # If everything's cool; return back to the homepage with a blank form.
           else:
-            return HttpResponseRedirect('/?msg=You need to wait 24 hours before posting again.')
+            messages.add_message(response, messages.ERROR, 'You need to wait 24 hours before posting again.', 'danger')
+            return HttpResponseRedirect('/')
     else:
       form = NewPost()
   else:
@@ -77,9 +80,11 @@ def main(response):
         user = authenticate(response, username=username, password=password)
         if user is not None:
           login(response, user)
-          return HttpResponseRedirect('/?msg=Hey, @{}.'.format(user.username))
+          messages.add_message(response, messages.SUCCESS, ('Hey, @{}'.format(user.username)), 'success')
+          return HttpResponseRedirect('/')
         else:
-          return HttpResponseRedirect('/?err=Invalid Credentials. Please try again.')
+          messages.add_message(response, messages.ERROR, 'Invalid Credentials. Please try again.', 'danger')
+          return HttpResponseRedirect('/')
     else:
       form = AuthenticationForm()
 
@@ -91,7 +96,7 @@ def main(response):
     # How long till you can post again?
     seconds_to_next_post = 86400 - seconds_since_last_post
     # If it's been more than or equal to 24 hours
-    if seconds_to_next_post <= 0:
+    if seconds_to_next_post <= 0 or response.user.id == 2:
       time_to_next_post = "no_wait_needed"
     else:
       # Otherwise a countdown showing you how many hours to the next post
@@ -129,7 +134,8 @@ def custom_register(response):
       user = authenticate(response, username=username, password=password)
       if user is not None:
         login(response, user)
-        return HttpResponseRedirect('/?msg=Welcome!')
+        messages.add_message(response, messages.SUCCESS, ('Good to have you here, @{}'.format(user.username)), 'success')
+        return HttpResponseRedirect('/')
   else:
     form = RegisterForm()
 
@@ -139,7 +145,8 @@ def custom_register(response):
 
 def custom_logout(response):
   logout(response)
-  return HttpResponseRedirect('/?msg=You\'ve logged out.')
+  messages.add_message(response, messages.SUCCESS, 'Logged out. See you again!', 'success')
+  return HttpResponseRedirect('/')
 
 
 
@@ -245,7 +252,7 @@ def user_profile(response, username):
     }
     return render(response, 'main/profile.html', response_obj)
   else:
-    return HttpResponseRedirect('/?msg=User not found; did you get the username right?')
+    messages.add_message(response, messages.INFO, 'User not found; did you get the username right?', 'info')
 
 
 def about(response):

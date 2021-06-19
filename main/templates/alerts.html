@@ -1,6 +1,6 @@
 {% load tag_alerts %}
 
-<div class="m-0 alert shadow-sm alert-dismissible fade show {{ context.0 }}" role="alert">
-  {{ context.1 }}
+<div class="mx-0 my-2 alert shadow-sm alert-dismissible fade show alert-{{ alert.tags }}" role="alert">
+  {{ alert }}
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>

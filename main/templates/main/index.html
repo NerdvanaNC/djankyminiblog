@@ -90,13 +90,15 @@
       </div>
     </nav>
     <div class="container pb-4">
-
-      {% block alerts %}
-      {% endblock alerts %}
+      <div class="row justify-content-center" id="alerts">
+        <div class="col-md-6 col-12">
+          {% block alerts %}
+          {% endblock alerts %}
+        </div>
+      </div>
 
       {% block content %}
       {% endblock content %}
-
     </div>
     <footer class="footer mt-auto py-3 bg-dark border-top border-3">
       <div class="container">
