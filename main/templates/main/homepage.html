@@ -45,6 +45,11 @@
                     {% if field.help_text %}
                       <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
                     {% endif %}
+                    {% if field.errors %}
+                      {% for error in field.errors %}
+                        <p class="text-danger text-center mt-2">{{ error }}</p>
+                      {% endfor %}
+                    {% endif %}
                   </div>
                 {% endfor %}
                 <div class="d-grid">
@@ -84,6 +89,11 @@
                   <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
                   {% if field.help_text %}
                     <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
+                  {% endif %}
+                  {% if form.errors %}
+                    {% for error in field.errors %}
+                      <span class="text-danger">{{ error|escape }}</span>
+                    {% endfor %}
                   {% endif %}
                 </div>
               {% endfor %}

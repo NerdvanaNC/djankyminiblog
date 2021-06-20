@@ -48,6 +48,15 @@
                   </button>
                 </div>
                 {% if form %}
+                  {% if form.errors %}
+                    {% for field in form %}
+                      {% if field.errors %}
+                        {% for error in field.errors %}
+                          <span class="text-danger my-2" style="font-size: 0.7rem;">{{ error }}</span>
+                        {% endfor %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
                   <form method="post" id="bio-update-form" style="display: none;">
                     {% csrf_token %}
                     {% render_field form.bio class="form-control mb-2" placeholder=requested_user.profile.bio rows='5' %}

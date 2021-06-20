@@ -4,6 +4,14 @@
  
 {% block title %}About{%endblock title %}
 
+{% block alerts %}
+  {% if messages %}
+    {% for message in messages %}
+      {% alert message %}
+    {% endfor %}
+  {% endif %}
+{% endblock alerts %}
+
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-12 col-md-6">
