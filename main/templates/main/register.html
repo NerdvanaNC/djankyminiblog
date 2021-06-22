@@ -28,13 +28,13 @@
                 <div class="form-floating mb-3">
                   {% render_field field class="form-control" placeholder=field.label.tag %}
                   <label for="{{ field.id_for_label }}">{{ field.label_tag }}</label>
-                  {% if field.help_text %}
-                    <div class="help-text text-secondary mt-2 mb-4">{{ field.help_text }}</div>
-                  {% endif %}
-                  {% if field.errors %}
-                    {% for error in field.errors %}
-                      <span class="text-danger">{{ error }}</span>
-                    {% endfor %}
+                  {% if field.help_text or field.errors %}
+                    <div class="help-text text-secondary mt-2 mb-4">
+                      {% for error in field.errors %}
+                        <span class="text-danger mb-1 d-block">{{ error }}</span>
+                      {% endfor %}
+                      {{ field.help_text }}
+                    </div>
                   {% endif %}
                 </div>
               {% endfor %}

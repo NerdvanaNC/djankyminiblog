@@ -13,7 +13,7 @@ def now_minus_25hours():
 # Create your models here.
 class Post(models.Model):
   author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="post", null=True)
-  text = tinymodels.HTMLField(max_length=5000)
+  text = tinymodels.HTMLField()
   likes = models.IntegerField()
   createdAt = models.DateTimeField(auto_now_add=True)
 
