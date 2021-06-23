@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.forms import AuthenticationForm
@@ -8,6 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import NewPost, RegisterForm, UpdateProfileBio
 from .models import Post
 from django.utils import timezone
+from azure.storage.blob import ContainerClient
 import bleach
 import datetime
 import re
@@ -233,6 +235,7 @@ def user_profile(response, username):
 
       page_active = 'authored'
 
+    # User Bio updated
     if response.method == "POST":
       form = UpdateProfileBio(response.POST)
       if (form.is_valid()) and response.user == requested_user:
@@ -244,6 +247,17 @@ def user_profile(response, username):
       form = UpdateProfileBio()
     else:
       form = UpdateProfileBio()
+
+
+    # User avatar update
+    # Using Azure for cloud storage.
+    # blob_service_client = BlobServiceClient(account_url=settings.AZURE_ACCESS_URL)
+    # container_service_client = blob_service_client.get_container_client(settings.AZURE_CONTAINER_NAME)
+
+    container_client = ContainerClient(account_url=settings.AZURE_ACCESS_URL, container_name='avatars')
+
+    with open('main/sample.txt', 'rb') as file_data:
+      container_client.upload_blob(name='sample.txt', data=file_data)
 
 
     response_obj = {
