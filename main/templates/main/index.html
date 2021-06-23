@@ -45,6 +45,18 @@
       .user-profile .user-bio p {
         white-space: pre-line;
       }
+
+      button#profile-photo-update-form-show {
+        bottom: 0.5rem;
+        right: 0.5rem;
+        opacity: 0;
+        transition: all 0.2s ease;
+      }
+
+      .user-profile-photo:hover button#profile-photo-update-form-show {
+        opacity: 1;
+        transition: all 0.2s ease;
+      }
     </style>
     {% if form is not None %}
       {{ form.media }}

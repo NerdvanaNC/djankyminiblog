@@ -19,15 +19,20 @@
 {% block content %}
 
   <div class="row justify-content-center">
-    <div class="col-12 col-lg-3 px-3"> <!-- User Card -->
+    <div class="col-12 col-lg-3 col-md-4 px-3"> <!-- User Card -->
       <div class="user-profile">
         <div class="card">
-          <img class="profile-avatar" src="
-          {% if requested_user.profile.avatar %}
-            {{ requested_user.profile.avatar_link }}
-          {% else %}
-            https://picsum.photos/251
-          {% endif %}" class="card-img-top" alt="Profile photo">
+          <div class="user-profile-photo text-center position-relative">
+            <img class="profile-avatar img-fluid" src="
+            {% if requested_user.profile.avatar %}
+              {{ requested_user.profile.avatar_link }}
+            {% else %}
+              https://picsum.photos/251
+            {% endif %}" class="card-img-top" alt="Profile photo">
+            <button id="profile-photo-update-form-show" class="btn btn-light btn-sm shadow-sm position-absolute" style="font-size: 0.7rem;">
+              Edit
+            </button>
+          </div>
           <div class="card-body">
             <p class="pb-3 border-bottom">
               <strong>@{{ requested_user.username }}</strong>
@@ -94,7 +99,7 @@
     </div>
 
 
-    <div class="col-12 col-lg-8 px-3"> <!-- User Posts -->
+    <div class="col-12 col-md-8 px-3"> <!-- User Posts -->
       <div class="infinite-container mb-3">
         {% if page_obj %}
           {% for post in page_obj %}
