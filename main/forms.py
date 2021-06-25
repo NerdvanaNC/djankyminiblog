@@ -18,6 +18,6 @@ class RegisterForm(UserCreationForm):
 class UpdateProfileBio(forms.Form):
   bio = forms.CharField(max_length=200, required=False, widget=forms.Textarea)
 
-  # class Meta:
-  #   model = Profile
-  #   fields = '__all__'
+
+class UpdateProfileAvatar(forms.Form):
+  avatar_img = forms.ImageField()

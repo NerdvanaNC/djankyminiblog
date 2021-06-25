@@ -9,7 +9,7 @@
             {{ post.author.profile.avatar_link }}
           {% else %}
             https://picsum.photos/50
-          {% endif %}" alt="Profile photo"></a>
+          {% endif %}" alt="@{{post.author.username}}'s avatar"></a>
           {% if post.author %}
             <a href="/@{{ post.author.username }}">&nbsp;@{{ post.author.username }}</a>
           {% else %}

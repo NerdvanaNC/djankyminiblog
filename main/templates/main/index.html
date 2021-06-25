@@ -46,16 +46,20 @@
         white-space: pre-line;
       }
 
-      button#profile-photo-update-form-show {
+      button#avatar-update-form-show {
         bottom: 0.5rem;
         right: 0.5rem;
         opacity: 0;
         transition: all 0.2s ease;
       }
 
-      .user-profile-photo:hover button#profile-photo-update-form-show {
+      .user-avatar:hover button#avatar-update-form-show {
         opacity: 1;
         transition: all 0.2s ease;
+      }
+
+      .user-avatar {
+        min-height: 251px;
       }
     </style>
     {% if form is not None %}
@@ -133,6 +137,23 @@
       jQuery(document).ready(function() {
         // alert auto-close
         setTimeout(function() { jQuery('.alert .btn-close').click(); }, 5000)
+
+        // user avatar update form show/hide
+        let $avatarCard = jQuery('.user-profile .user-avatar');
+        $avatarCard.on('click', '#avatar-update-form-show', function(event) {
+          event.preventDefault();
+          let $this = jQuery(this);
+          $this.hide();
+          jQuery('#user-avatar').hide();
+          jQuery('#avatar-update-form').show();
+        });
+
+        $avatarCard.on('click', '#avatar-update-form-hide', function(event) {
+          event.preventDefault();
+          jQuery('#avatar-update-form-show').show();
+          jQuery('#avatar-update-form').hide();
+          jQuery('#user-avatar').show();
+        });
 
         // user bio update form show/hide
         let $bioCard = jQuery('.user-profile .user-bio');

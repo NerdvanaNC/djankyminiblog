@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .forms import NewPost, RegisterForm, UpdateProfileBio
+from .forms import NewPost, RegisterForm, UpdateProfileBio, UpdateProfileAvatar
 from .models import Post
 from django.utils import timezone
+from django.core.files.storage import FileSystemStorage
 from azure.storage.blob import ContainerClient
 import bleach
 import datetime
@@ -235,30 +236,31 @@ def user_profile(response, username):
 
       page_active = 'authored'
 
-    # User Bio updated
+    # Form submit
     if response.method == "POST":
-      form = UpdateProfileBio(response.POST)
-      if (form.is_valid()) and response.user == requested_user:
-        bio = form.cleaned_data['bio']
-        if bio != "":
-          bio = re.sub("(\\r\\n){3,}", "\r\n\r\n", bio)
-          requested_user.profile.bio = bio
-          requested_user.profile.save()
-      form = UpdateProfileBio()
-    else:
-      form = UpdateProfileBio()
-
-
-    # User avatar update
-    # Using Azure for cloud storage.
-    # blob_service_client = BlobServiceClient(account_url=settings.AZURE_ACCESS_URL)
-    # container_service_client = blob_service_client.get_container_client(settings.AZURE_CONTAINER_NAME)
-
-    container_client = ContainerClient(account_url=settings.AZURE_ACCESS_URL, container_name='avatars')
-
-    with open('main/sample.txt', 'rb') as file_data:
-      container_client.upload_blob(name='sample.txt', data=file_data)
-
+      if response.POST.get('bio-update'):
+        form = UpdateProfileBio(response.POST)
+        if (form.is_valid()) and response.user == requested_user:
+          bio = form.cleaned_data['bio']
+          if bio != "":
+            bio = re.sub("(\\r\\n){3,}", "\r\n\r\n", bio)
+            requested_user.profile.bio = bio
+            requested_user.profile.save()
+      elif response.POST.get('avatar-update'):
+        avatarForm = UpdateProfileAvatar(response.POST, response.FILES)
+        file = response.FILES.get('avatar_img')
+        fs = FileSystemStorage()
+        filename = fs.save('avatars/{}'.format(file.name), file)
+        uploaded_file_url = fs.url(filename)
+        print("***DEBUG***:", uploaded_file_url)
+        
+        # Using Azure for cloud storage.
+        # container_client = ContainerClient(account_url=settings.AZURE_ACCESS_URL, container_name='avatars')
+        # with open(uploaded_file_url, 'rb') as file_data:
+        #   container_client.upload_blob('Xuur8js.jpg', data=file_data)
+    
+    form = UpdateProfileBio()
+    avatarForm = UpdateProfileAvatar()
 
     response_obj = {
       'requested_user': requested_user,
@@ -266,6 +268,7 @@ def user_profile(response, username):
       'active': page_active,
       'num_posts': authored_posts.count(),
       'form': form,
+      'avatarForm': avatarForm,
     }
     return render(response, 'main/profile.html', response_obj)
   else:

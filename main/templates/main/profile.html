@@ -22,16 +22,42 @@
     <div class="col-12 col-lg-3 col-md-4 px-3"> <!-- User Card -->
       <div class="user-profile">
         <div class="card">
-          <div class="user-profile-photo text-center position-relative">
-            <img class="profile-avatar img-fluid" src="
+          <div class="user-avatar text-center position-relative d-flex align-items-center">
+            <img id="user-avatar" class="img-fluid" src="
             {% if requested_user.profile.avatar %}
               {{ requested_user.profile.avatar_link }}
             {% else %}
               https://picsum.photos/251
-            {% endif %}" class="card-img-top" alt="Profile photo">
-            <button id="profile-photo-update-form-show" class="btn btn-light btn-sm shadow-sm position-absolute" style="font-size: 0.7rem;">
-              Edit
-            </button>
+            {% endif %}" class="card-img-top" alt="@{{ requested_user.username }}'s avatar">
+            {% if avatarForm %}
+              <form method="post" enctype="multipart/form-data" id="avatar-update-form" style="display: none;" class="p-3 my-5">
+                {% csrf_token %}
+                <input type="hidden" name="avatar-update" value="{{ user.username }}">
+                {% for field in avatarForm %}
+                  {% if avatarForm.errors %}
+                    {% if field.errors %}
+                      {% for error in field.errors %}
+                        <span class="text-danger my-2" style="font-size: 0.7rem;">{{ error }}</span>
+                      {% endfor %}
+                    {% endif %}
+                  {% endif %}
+                  {% render_field field class="form-control form-control-sm mb-2" %}
+                {% endfor %}
+                <div class="d-flex">
+                  <button id="avatar-update-submit" class="btn btn-outline-primary btn-sm flex-fill mx-1" style="font-size: 0.7rem;" type="submit">
+                    Update
+                  </button>
+                  <button id="avatar-update-form-hide" class="btn btn-outline-danger btn-sm flex-fill mx-1" style="font-size: 0.7rem;" type="button">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            {% endif %}
+            {% if requested_user == user %}
+              <button id="avatar-update-form-show" class="btn btn-light btn-sm shadow-sm position-absolute" style="font-size: 0.7rem;">
+                Edit
+              </button>
+            {% endif %}
           </div>
           <div class="card-body">
             <p class="pb-3 border-bottom">
@@ -46,17 +72,18 @@
                   </button>
                 </div>
                 {% if form %}
-                  {% if form.errors %}
-                    {% for field in form %}
-                      {% if field.errors %}
-                        {% for error in field.errors %}
-                          <span class="text-danger my-2" style="font-size: 0.7rem;">{{ error }}</span>
-                        {% endfor %}
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
                   <form method="post" id="bio-update-form" style="display: none;">
                     {% csrf_token %}
+                    <input type="hidden" name="bio-update" value="{{ user.username }}">
+                    {% if form.errors %}
+                      {% for field in form %}
+                        {% if field.errors %}
+                          {% for error in field.errors %}
+                            <span class="text-danger my-2" style="font-size: 0.7rem;">{{ error }}</span>
+                          {% endfor %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
                     {% render_field form.bio class="form-control mb-2" placeholder=requested_user.profile.bio rows='5' %}
                     <div class="d-flex">
                       <button id="bio-update-submit" class="btn btn-outline-primary btn-sm flex-fill mx-1" style="font-size: 0.7rem;" type="submit">
