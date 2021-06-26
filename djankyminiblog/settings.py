@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 import environ
 
 env = environ.Env()
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'widget_tweaks',
     'tinymce',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +125,13 @@ USE_L10N = True
 USE_TZ = True
 
 
+# Media files (user uploaded)
+# Only used for temp storage, consequently
+# uploaded to Azure then deleted
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -146,3 +155,10 @@ TINYMCE_DEFAULT_CONFIG = {
     "a11ycheck ltr rtl | showcomments addcomment code",
     "custom_undo_redo_levels": 5,
 }
+
+# Azure configuration
+# DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+STATICFILES_STORAGE = 'djankyminiblog.storage-backend.PublicAzureStorage'
+AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
+AZURE_CONTAINER_NAME = env('AZURE_CONTAINER_NAME')
+AZURE_ACCESS_KEY = env('AZURE_ACCESS_KEY')

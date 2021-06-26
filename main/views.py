@@ -9,8 +9,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import NewPost, RegisterForm, UpdateProfileBio, UpdateProfileAvatar
 from .models import Post
 from django.utils import timezone
-from django.core.files.storage import FileSystemStorage
-from azure.storage.blob import ContainerClient
+# from django.core.files.storage import FileSystemStorage
+# from azure.storage.blob import ContainerClient
+from djankyminiblog.storage_backend import PublicAzureStorage
 import bleach
 import datetime
 import re
@@ -249,8 +250,8 @@ def user_profile(response, username):
       elif response.POST.get('avatar-update'):
         avatarForm = UpdateProfileAvatar(response.POST, response.FILES)
         file = response.FILES.get('avatar_img')
-        fs = FileSystemStorage()
-        filename = fs.save('avatars/{}'.format(file.name), file)
+        fs = PublicAzureStorage()
+        filename = fs.save(file.name, file)
         uploaded_file_url = fs.url(filename)
         print("***DEBUG***:", uploaded_file_url)
         
