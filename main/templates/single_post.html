@@ -6,7 +6,7 @@
       <div class="d-flex justify-content-between align-items-center">
         <strong class="post-author">
           <a href="/@{{ post.author.username }}"><img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if post.author.profile.avatar %}
-            {{ post.author.profile.avatar_link }}
+            {{ post.author.profile.avatar }}
           {% else %}
             https://picsum.photos/50
           {% endif %}" alt="@{{post.author.username}}'s avatar"></a>

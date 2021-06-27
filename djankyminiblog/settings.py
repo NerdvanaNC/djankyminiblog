@@ -158,7 +158,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 # Azure configuration
 # DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-STATICFILES_STORAGE = 'djankyminiblog.storage-backend.PublicAzureStorage'
+# STATICFILES_STORAGE = 'djankyminiblog.storage_backend.PublicAzureStorage'
 AZURE_ACCOUNT_NAME = env('AZURE_ACCOUNT_NAME')
 AZURE_CONTAINER_NAME = env('AZURE_CONTAINER_NAME')
 AZURE_ACCESS_KEY = env('AZURE_ACCESS_KEY')

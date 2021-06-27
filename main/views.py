@@ -251,9 +251,9 @@ def user_profile(response, username):
         avatarForm = UpdateProfileAvatar(response.POST, response.FILES)
         file = response.FILES.get('avatar_img')
         fs = PublicAzureStorage()
-        filename = fs.save(file.name, file)
-        uploaded_file_url = fs.url(filename)
-        print("***DEBUG***:", uploaded_file_url)
+        filename = fs.save('avatars/{}'.format(file.name), file)
+        requested_user.profile.avatar = fs.url(filename)
+        requested_user.profile.save()
         
         # Using Azure for cloud storage.
         # container_client = ContainerClient(account_url=settings.AZURE_ACCESS_URL, container_name='avatars')

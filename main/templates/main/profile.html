@@ -25,7 +25,7 @@
           <div class="user-avatar text-center position-relative d-flex align-items-center">
             <img id="user-avatar" class="img-fluid" src="
             {% if requested_user.profile.avatar %}
-              {{ requested_user.profile.avatar_link }}
+              {{ requested_user.profile.avatar }}
             {% else %}
               https://picsum.photos/251
             {% endif %}" class="card-img-top" alt="@{{ requested_user.username }}'s avatar">
@@ -41,8 +41,10 @@
                       {% endfor %}
                     {% endif %}
                   {% endif %}
-                  {% render_field field class="form-control form-control-sm mb-2" %}
+                  {% render_field field class="form-control form-control-sm mb-2" onchange="avatarValidation()" id="avatar-image-upload" %}
                 {% endfor %}
+                <span class="avatar-size-error small text-danger my-2" style="display: none; font-size: 0.7rem;">Max filesize is 1 MB.</span>
+                <span class="avatar-format-error small text-danger my-2" style="display: none; font-size: 0.7rem;">Only JPG, JPEG, and PNG files.</span>
                 <div class="d-flex">
                   <button id="avatar-update-submit" class="btn btn-outline-primary btn-sm flex-fill mx-1" style="font-size: 0.7rem;" type="submit">
                     Update

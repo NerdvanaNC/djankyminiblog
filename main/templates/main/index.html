@@ -85,7 +85,7 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   <img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if user.profile.avatar %}
-                              {{ user.profile.avatar_link }}
+                              {{ user.profile.avatar }}
                             {% else %}
                               https://picsum.photos/50
                             {% endif %}" alt="@{{ user.username }}">
@@ -252,6 +252,27 @@
         } // ajaxUnlike() end
 
       }); // document.ready()
+
+      // Avatar Image Validation
+
+      function avatarValidation() {
+        jQuery('.avatar-size-error').hide();
+        jQuery('.avatar-format-error').hide();
+        field = document.getElementById('avatar-image-upload')
+        file = field.files[0];
+        file_type = file.type.split('/').pop().toLowerCase();
+        if (file_type == 'jpg' || file_type == 'jpeg' || file_type == 'png') {
+          return true;
+        } else if (file.size > 1024000) {
+          jQuery('.avatar-size-error').show();
+          fied.value = '';
+          return false;
+        } else {
+          jQuery('.avatar-format-error').show();
+          field.value = '';
+          return false;
+        }
+      }
     </script>
   </body>
 </html>

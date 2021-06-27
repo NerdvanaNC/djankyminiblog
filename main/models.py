@@ -38,7 +38,7 @@ class Profile(models.Model):
   last_post = models.DateTimeField(default=now_minus_25hours)
   liked_posts = models.ManyToManyField(Post)
   bio = models.CharField(max_length=200, default='Very creative with their posts, but they haven\'t added a bio yet.')
-  avatar_url = models.CharField(max_length=600, default='https://picsum.photos/251/')
+  avatar = models.CharField(max_length=600, default='https://picsum.photos/251/')
   # more profile details will go here
   # to extend the base User model provided
   # by Django.
