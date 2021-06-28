@@ -22,8 +22,8 @@
     <div class="col-12 col-lg-3 col-md-4 px-3"> <!-- User Card -->
       <div class="user-profile">
         <div class="card">
-          <div class="user-avatar text-center position-relative d-flex align-items-center">
-            <img id="user-avatar" class="img-fluid" src="
+          <div class="user-avatar text-center position-relative d-flex align-items-center justify-content-center">
+            <img id="user-avatar" src="
             {% if requested_user.profile.avatar %}
               {{ requested_user.profile.avatar }}
             {% else %}
@@ -53,6 +53,9 @@
                     Cancel
                   </button>
                 </div>
+                <span class="small text-secondary" style="font-size: 0.75rem;">
+                  Square 1:1 photos. Max size 1 MB.
+                </span>
               </form>
             {% endif %}
             {% if requested_user == user %}

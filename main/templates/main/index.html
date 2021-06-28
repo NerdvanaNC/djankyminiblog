@@ -61,6 +61,20 @@
       .user-avatar {
         min-height: 251px;
       }
+
+      .small-avatar {
+        width: 2rem;
+        height: 2rem;
+      }
+
+      .user-avatar {
+        overflow: hidden;
+      }
+
+      #user-avatar {
+        min-height: 251px;
+        width: auto;
+      }
     </style>
     {% if form is not None %}
       {{ form.media }}
@@ -84,7 +98,7 @@
             {% if user.is_authenticated %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <img class="nav-avatar rounded-circle" style="max-height: 2rem;" src="{% if user.profile.avatar %}
+                  <img class="small-avatar rounded-circle" src="{% if user.profile.avatar %}
                               {{ user.profile.avatar }}
                             {% else %}
                               https://picsum.photos/50
