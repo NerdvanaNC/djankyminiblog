@@ -103,7 +103,7 @@ def main(response):
     # How long till you can post again?
     seconds_to_next_post = 86400 - seconds_since_last_post
     # If it's been more than or equal to 24 hours
-    if seconds_to_next_post <= 0 or response.user.id == 2:
+    if seconds_to_next_post <= 0 or response.user.id == 2 or response.user.id == 1:
       time_to_next_post = "no_wait_needed"
     else:
       # Otherwise a countdown showing you how many hours to the next post
