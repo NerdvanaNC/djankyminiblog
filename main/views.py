@@ -17,7 +17,7 @@ import datetime
 import re
 import random
 
-bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'span']
+bleach_allowed_tags = ['pre', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'span', 'br']
 bleach_allowed_attrs = { '*': ['style'], 'a': ['href', 'title', '_target'] }
 bleach_allowed_styles = ['color', 'font-family', 'font-size', 'text-decoration', 'text-align']
 
@@ -60,7 +60,7 @@ def main(response):
         if form.is_valid():
           u = response.user
           now = timezone.now()
-          if (now - u.profile.last_post).total_seconds() > 86400 or u.id == 2:
+          if (now - u.profile.last_post).total_seconds() > 86400 or u.id == 1 or u.id == 2:
             # We only allows posts once every 24 hours
             # But this limit doesn't apply to me, as I'm the admin
             post_text = bleach.clean(form.cleaned_data['text'], tags=bleach_allowed_tags, attributes=bleach_allowed_attrs, styles=bleach_allowed_styles)
